@@ -421,6 +421,10 @@
             updatePipeline(4);
             
             try {
+                // Add timeout to prevent infinite loading
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+                
                 const response = await fetch(`${API_URL}/run-agent`, {
                     method: 'POST',
                     headers: {
@@ -430,8 +434,11 @@
                         icp: icp,
                         company: company,
                         recipient_email: email
-                    })
+                    }),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 const data = await response.json();
                 
@@ -473,7 +480,9 @@
                 console.error('Fetch error:', error);
                 let errorMessage = 'Failed to connect to backend. ';
                 
-                if (error.message === 'Failed to fetch') {
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Request timed out. The backend server is taking too long to respond (likely cold start on free tier). Please wait 60 seconds and try again.';
+                } else if (error.message === 'Failed to fetch') {
                     errorMessage += 'The backend server may be starting up (this can take 30-60 seconds on first request). Please try again in a moment.';
                 } else {
                     errorMessage += error.message;
