@@ -1,0 +1,159 @@
+Below is a complete, implementation-grade specification for Kiro. It is written as an engineering execution document, not marketing docs, so the coding agent can follow it precisely.
+
+This strictly follows the FireReach specification from the PDF: three tools, sequential flow, signal-grounded outreach, and automated sending.
+
+# FireReach – Autonomous Outreach Engine Implementation Specification for Kiro  ---  # 1. Project Overview  FireReach is a lightweight **autonomous outreach agent** designed to automate the workflow typically performed by Sales Development Representatives (SDRs) and Go-To-Market (GTM) teams.  Traditional outbound workflow:  1. Discover company signals (funding, hiring, expansion) 2. Research company context 3. Identify potential business pain points 4. Draft a personalized outreach email 5. Send the email  FireReach automates this entire pipeline using an **AI agent with sequential tool execution**.  ---  # 2. System Objective  Build a system that:  1. Captures **live buyer signals** about a target company 2. Analyzes those signals against a **user-provided Ideal Customer Profile (ICP)** 3. Generates a **personalized outreach email** 4. **Automatically sends the email**  The system must demonstrate **agentic reasoning using three tools** executed sequentially.  Pipeline:  
+
+Signal Capture → Contextual Research → Automated Outreach
+
+ ---  # 3. User Inputs  The user must provide three inputs.  | Field | Description | |------|-------------| | ICP | Ideal Customer Profile describing the type of company the user sells to | | Company | Target company name | | Recipient Email | Email address where outreach will be sent |  Example:  
+
+ICP: We sell high-end cybersecurity training to Series B startups.
+
+Company: Stripe
+
+Recipient Email: john@stripe.com
+
+ ---  # 4. System Architecture  The system consists of four major components:  1. Frontend UI 2. FastAPI Backend 3. Agent Controller 4. Tool Execution Layer  Architecture diagram:  
+
+Frontend (HTML) │ ▼ FastAPI Backend │ ▼ Agent Controller │ ├── tool_signal_harvester ├── tool_research_analyst └── tool_outreach_automated_sender
+
+ ---  # 5. Technology Stack  | Layer | Technology | |------|------------| | Backend | FastAPI | | LLM | Groq API (Llama 3) | | Signal Search | DuckDuckGo Search | | Email Delivery | Resend API | | Frontend | HTML + CSS + Vanilla JavaScript | | Deployment | Render (backend) + Vercel (frontend) |  ---  # 6. Repository Structure  
+
+firereach/ │ ├── backend/ │ ├── main.py │ ├── agent.py │ ├── tools/ │ │ ├── signal_harvester.py │ │ ├── research_analyst.py │ │ └── email_sender.py │ ├── requirements.txt │ └── .env │ ├── frontend/ │ └── index.html │ └── DOCS.md
+
+ ---  # 7. Environment Variables  The backend must load API keys from `.env`.  
+
+GROQ_API_KEY= RESEND_API_KEY= FROM_EMAIL=
+
+ Optional:  
+
+BACKEND_URL=
+
+ ---  # 8. Agent Execution Pipeline  The agent performs three steps.  
+
+User Input ↓ Signal Harvesting ↓ Account Research ↓ Email Generation + Delivery
+
+ Execution flow:  
+
+signals = tool_signal_harvester(company)
+
+account_brief = tool_research_analyst( company, signals, icp )
+
+email_result = tool_outreach_automated_sender( account_brief, signals, recipient_email, company )
+
+ The pipeline must execute **strictly in this order**.  ---  # 9. Tool Specifications  The system must implement **exactly three tools**.  ---  # Tool 1 – tool_signal_harvester  ### Purpose  Collect company **growth and activity signals**.  These signals represent observable company behavior that indicates potential sales opportunities.  ---  ### Type  Deterministic tool.  This tool **must NOT use an LLM**.  ---  ### Input  
+
+company_name: string
+
+ ---  ### Data Source  Use **DuckDuckGo Search API via duckduckgo-search library**.  Search query:  
+
+"{company_name} funding hiring expansion startup news"
+
+ ---  ### Extract Signals  Parse snippets from results and extract signals such as:  - funding announcements - hiring trends - product launches - expansion activity - leadership changes  ---  ### Output  
+
+{ "company": "Stripe", "signals": [ "Stripe hiring engineers for infrastructure teams", "Stripe expanding enterprise offerings", "Stripe investing heavily in developer tools" ] }
+
+ ---  # Tool 2 – tool_research_analyst  ### Purpose  Analyze signals and generate a contextual **account brief**.  ---  ### Type  LLM-powered tool.  Uses **Groq API (Llama 3)**.  ---  ### Input  
+
+company signals icp
+
+ Example:  
+
+company = "Stripe"
+
+signals = [ "Stripe hiring engineers", "Stripe expanding infrastructure" ]
+
+icp = "Cybersecurity training for Series B startups"
+
+ ---  ### LLM Prompt  The prompt must instruct the model to:  - produce exactly **two paragraphs** - analyze company growth signals - connect them to the ICP - identify likely operational challenges  ---  ### Output  
+
+{ "company": "Stripe", "account_brief": "Two paragraphs explaining company situation and ICP alignment." }
+
+ ---  # Tool 3 – tool_outreach_automated_sender  ### Purpose  Generate a personalized outreach email and send it automatically.  ---  ### Type  LLM + API execution.  ---  ### Inputs  
+
+account_brief signals recipient_email company
+
+ ---  ### Email Generation  Use Groq LLM to generate the email.  Constraints:  - email must reference **at least two signals** - tone must be professional - must connect signals to ICP value  ---  ### Email Structure  
+
+Subject: Personalized outreach
+
+Body: Greeting
+
+Signal reference
+
+Problem insight
+
+Value proposition
+
+Call to action
+
+ ---  ### Email Delivery  Send email using **Resend API**.  Example send:  
+
+resend.emails.send({ from: FROM_EMAIL, to: recipient_email, subject: subject, html: body })
+
+ ---  ### Output  
+
+{ "status": "sent", "recipient": recipient_email }
+
+ ---  # 10. Agent Controller (agent.py)  This file orchestrates the full pipeline.  Function:  
+
+run_agent(icp: str, company: str, recipient_email: str)
+
+ Steps:  
+
+signals = tool_signal_harvester(company)
+
+research = tool_research_analyst( company, signals["signals"], icp )
+
+email_result = tool_outreach_automated_sender( research["account_brief"], signals["signals"], recipient_email, company )
+
+return { signals, account_brief, email_status }
+
+ ---  # 11. Backend API  FastAPI must implement two routes.  ---  ### GET /  Health check.  Response:  
+
+{ "status": "FireReach API running" }
+
+ ---  ### POST /run-agent  Request body:  
+
+{ "icp": "...", "company": "...", "recipient_email": "..." }
+
+ Response:  
+
+{ "signals": [...], "account_brief": "...", "email_status": "sent" }
+
+ ---  # 12. Frontend UI  A single-page HTML interface.  ---  ### Inputs  
+
+ICP textarea Company input Recipient Email input
+
+ ---  ### Submit Button  
+
+Launch FireReach
+
+ ---  ### On Submit  Send POST request to:  
+
+/run-agent
+
+ ---  ### Display Results  The UI must show:  1. Signals captured 2. Generated account brief 3. Email delivery confirmation  ---  # 13. Example Execution  User Input:  
+
+ICP: Cybersecurity training for Series B startups
+
+Company: Notion
+
+Email: contact@notion.so
+
+ Signals Found:  
+
+Notion hiring engineers Notion expanding enterprise offerings Notion scaling product teams
+
+ Account Brief:  Two paragraphs explaining growth and potential security training needs.  Email Sent:  Personalized outreach referencing signals.  ---  # 14. Error Handling  If email sending fails:  
+
+return { "status": "simulated_sent" }
+
+ This ensures the pipeline completes during demo.  ---  # 15. Success Criteria  FireReach is successful if:  - signals are collected - account brief is generated - email references signals - email sending is triggered - UI displays results  ---  # 16. Final System Summary  FireReach automates the outbound sales workflow by combining:  - deterministic signal harvesting - AI-driven contextual research - automated personalized outreach  The agent demonstrates a complete **Signal → Research → Send** pipeline, showing how autonomous AI systems can reduce manual GTM workload. 
+
+If you'd like, I can also show you two small implementation tricks that dramatically reduce debugging time when building FastAPI + agent pipelines under a 1-hour deadline.
+
+
+
+gang lock the fuck in and lets make this shit 
