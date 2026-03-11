@@ -470,7 +470,16 @@
                 }
                 
             } catch (error) {
-                alert('Error: ' + error.message);
+                console.error('Fetch error:', error);
+                let errorMessage = 'Failed to connect to backend. ';
+                
+                if (error.message === 'Failed to fetch') {
+                    errorMessage += 'The backend server may be starting up (this can take 30-60 seconds on first request). Please try again in a moment.';
+                } else {
+                    errorMessage += error.message;
+                }
+                
+                alert(errorMessage);
                 loading.style.display = 'none';
                 form.style.display = 'block';
                 pipeline.style.display = 'none';
