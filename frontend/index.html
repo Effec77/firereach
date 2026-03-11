@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireReach - Autonomous Outreach Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e8e8e8;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #b8b8b8;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background: #0f3460;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border: 1px solid #16213e;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e8e8e8;
+            font-size: 14px;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #16213e;
+            border: 2px solid #1a1a2e;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #e8e8e8;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .pipeline {
+            margin-top: 30px;
+        }
+        
+        .pipeline h3 {
+            color: #ff6b35;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #16213e;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #1a1a2e;
+        }
+        
+        .pipeline-step.active {
+            border-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .pipeline-step.complete {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+        }
+        
+        .step-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .pipeline-step.active .step-icon {
+            background: #ff6b35;
+        }
+        
+        .pipeline-step.complete .step-icon {
+            background: #00d9ff;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .result-section {
+            margin-bottom: 25px;
+        }
+        
+        .result-section h3 {
+            color: #ff6b35;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .signals-grid {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .signal-card {
+            padding: 16px;
+            background: #16213e;
+            border-radius: 12px;
+            border-left: 4px solid #ff6b35;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .brief-text {
+            line-height: 1.8;
+            color: #d0d0d0;
+            white-space: pre-wrap;
+            font-size: 15px;
+        }
+        
+        .email-preview {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #1a1a2e;
+        }
+        
+        .email-header {
+            border-bottom: 1px solid #1a1a2e;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .email-subject {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e8e8e8;
+            margin-bottom: 8px;
+        }
+        
+        .email-meta {
+            font-size: 13px;
+            color: #b8b8b8;
+        }
+        
+        .email-body {
+            line-height: 1.8;
+            color: #d0d0d0;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-badge.sent {
+            background: #00d9ff;
+            color: #0f3460;
+        }
+        
+        .status-badge.failed {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #1a1a2e;
+            border-top: 4px solid #ff6b35;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 FireReach</h1>
+            <p>Autonomous Outreach Engine</p>
+        </div>
+        
+        <div class="main-grid">
+            <!-- Left Column: Input Form + Pipeline -->
+            <div>
+                <div class="card">
+                    <form id="firereach-form">
+                        <div class="form-group">
+                            <label for="icp">Ideal Customer Profile (ICP)</label>
+                            <textarea id="icp" placeholder="e.g., We sell high-end cybersecurity training to Series B startups" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="company">Target Company</label>
+                            <input type="text" id="company" placeholder="e.g., Acme Corp" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Recipient Email</label>
+                            <input type="email" id="email" placeholder="e.g., contact@company.com" required>
+                        </div>
+                        
+                        <button type="submit" id="submit-btn">🚀 Launch FireReach</button>
+                    </form>
+                    
+                    <div id="loading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Running autonomous agent pipeline...</p>
+                    </div>
+                    
+                    <div class="pipeline" id="pipeline" style="display: none;">
+                        <h3>🤖 Agent Pipeline</h3>
+                        <div class="pipeline-step" id="step-1">
+                            <div class="step-icon">1</div>
+                            <div>Signal Harvesting</div>
+                        </div>
+                        <div class="pipeline-step" id="step-2">
+                            <div class="step-icon">2</div>
+                            <div>Research Analysis</div>
+                        </div>
+                        <div class="pipeline-step" id="step-3">
+                            <div class="step-icon">3</div>
+                            <div>Outreach Generation</div>
+                        </div>
+                        <div class="pipeline-step" id="step-4">
+                            <div class="step-icon">4</div>
+                            <div>Email Dispatch</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Results -->
+            <div class="card results" id="results">
+                <div class="result-section">
+                    <h3>📊 Signals Captured</h3>
+                    <div class="signals-grid" id="signals-list"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📝 Account Brief</h3>
+                    <div class="brief-text" id="account-brief"></div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📧 Generated Email</h3>
+                    <div class="email-preview">
+                        <div class="email-header">
+                            <div class="email-subject" id="email-subject"></div>
+                            <div class="email-meta">
+                                To: <span id="email-recipient"></span>
+                            </div>
+                        </div>
+                        <div class="email-body" id="email-body"></div>
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>✉️ Email Status</h3>
+                    <div class="status-container">
+                        <span class="status-badge" id="email-status"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="config.js"></script>
+    <script>
+        const form = document.getElementById('firereach-form');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const pipeline = document.getElementById('pipeline');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        function updatePipeline(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                stepEl.classList.remove('active', 'complete');
+                if (i < step) {
+                    stepEl.classList.add('complete');
+                } else if (i === step) {
+                    stepEl.classList.add('active');
+                }
+            }
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const icp = document.getElementById('icp').value;
+            const company = document.getElementById('company').value;
+            const email = document.getElementById('email').value;
+            
+            // Show loading and pipeline
+            form.style.display = 'none';
+            loading.style.display = 'block';
+            pipeline.style.display = 'block';
+            results.classList.remove('show');
+            
+            // Simulate pipeline steps
+            updatePipeline(1);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            updatePipeline(2);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            updatePipeline(3);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            updatePipeline(4);
+            
+            try {
+                const response = await fetch(`${API_URL}/run-agent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        icp: icp,
+                        company: company,
+                        recipient_email: email
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Display signals as cards
+                const signalsList = document.getElementById('signals-list');
+                signalsList.innerHTML = '';
+                data.signals.forEach(signal => {
+                    const card = document.createElement('div');
+                    card.className = 'signal-card';
+                    card.textContent = signal;
+                    signalsList.appendChild(card);
+                });
+                
+                // Display account brief
+                document.getElementById('account-brief').textContent = data.account_brief;
+                
+                // Display email in preview
+                document.getElementById('email-subject').textContent = data.subject;
+                document.getElementById('email-recipient').textContent = email;
+                document.getElementById('email-body').textContent = data.generated_email;
+                
+                // Display email status
+                const statusBadge = document.getElementById('email-status');
+                statusBadge.textContent = data.status.toUpperCase();
+                statusBadge.className = 'status-badge ' + (data.status === 'sent' ? 'sent' : 'failed');
+                
+                // Show results
+                loading.style.display = 'none';
+                results.classList.add('show');
+                form.style.display = 'block';
+                
+                // Mark all pipeline steps as complete
+                for (let i = 1; i <= 4; i++) {
+                    document.getElementById(`step-${i}`).classList.add('complete');
+                    document.getElementById(`step-${i}`).classList.remove('active');
+                }
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+                loading.style.display = 'none';
+                form.style.display = 'block';
+                pipeline.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

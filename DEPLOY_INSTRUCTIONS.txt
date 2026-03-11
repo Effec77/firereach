@@ -1,0 +1,110 @@
+🚀 FIREREACH DEPLOYMENT - QUICK START GUIDE
+
+═══════════════════════════════════════════════════════════════
+
+STEP 1: DEPLOY BACKEND TO RENDER
+═══════════════════════════════════════════════════════════════
+
+1. Push your code to GitHub (if not done):
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin YOUR_GITHUB_REPO_URL
+   git push -u origin main
+
+2. Go to https://render.com and sign up/login
+
+3. Click "New +" → "Web Service"
+
+4. Connect your GitHub repository
+
+5. Configure the service:
+   Name: firereach-backend
+   Root Directory: backend
+   Environment: Python 3
+   Build Command: pip install -r requirements.txt
+   Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+6. Add Environment Variables (click "Advanced" → "Add Environment Variable"):
+   GROQ_API_KEY = your_groq_api_key
+   RESEND_API_KEY = your_resend_api_key
+   FROM_EMAIL = your_verified_email@domain.com
+
+7. Click "Create Web Service"
+
+8. Wait 3-5 minutes for deployment
+
+9. COPY YOUR BACKEND URL (e.g., https://firereach-backend.onrender.com)
+
+═══════════════════════════════════════════════════════════════
+
+STEP 2: UPDATE FRONTEND CONFIG
+═══════════════════════════════════════════════════════════════
+
+1. Open frontend/config.js
+
+2. Replace:
+   const API_URL = 'http://localhost:8000';
+   
+   With:
+   const API_URL = 'https://YOUR-RENDER-URL.onrender.com';
+
+3. Save the file
+
+4. Commit and push:
+   git add frontend/config.js
+   git commit -m "Update API URL for production"
+   git push
+
+═══════════════════════════════════════════════════════════════
+
+STEP 3: DEPLOY FRONTEND TO VERCEL
+═══════════════════════════════════════════════════════════════
+
+1. Go to https://vercel.com and sign up/login with GitHub
+
+2. Click "Add New..." → "Project"
+
+3. Import your GitHub repository
+
+4. Configure:
+   Framework Preset: Other
+   Root Directory: frontend
+   Build Command: (leave empty)
+   Output Directory: (leave empty)
+
+5. Click "Deploy"
+
+6. Wait 1-2 minutes
+
+7. Vercel will give you a URL (e.g., https://firereach.vercel.app)
+
+═══════════════════════════════════════════════════════════════
+
+STEP 4: TEST YOUR DEPLOYED APP
+═══════════════════════════════════════════════════════════════
+
+1. Visit your Vercel URL
+
+2. Fill in the form:
+   ICP: We sell cybersecurity training to Series B startups
+   Company: Stripe
+   Email: test@example.com
+
+3. Click "Launch FireReach"
+
+4. Verify:
+   ✓ Signals are captured
+   ✓ Account brief is generated
+   ✓ Email is created
+
+═══════════════════════════════════════════════════════════════
+
+DONE! 🎉
+
+Your FireReach app is now live and accessible worldwide!
+
+Backend: https://YOUR-BACKEND.onrender.com
+Frontend: https://YOUR-FRONTEND.vercel.app
+
+═══════════════════════════════════════════════════════════════
