@@ -15,20 +15,35 @@
         }
         
         :root {
-            --bg-primary: #0d1117;
-            --bg-surface: #161b22;
-            --bg-elevated: #21262d;
-            --border: #30363d;
-            --primary: #ff6b35;
-            --primary-hover: #e55a25;
-            --success: #3fb950;
-            --warning: #d29922;
-            --error: #f85149;
-            --info: #58a6ff;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --text-muted: #484f58;
-            --accent-cyan: #39d353;
+            --bg-primary: #0a0e27;
+            --bg-surface: #141829;
+            --bg-elevated: #1a1f3a;
+            --bg-accent: #1f2d4d;
+            --border: #2a3559;
+            --border-light: #3a4570;
+            --primary: #00d9ff;
+            --primary-hover: #00b8d4;
+            --primary-dark: #0097ad;
+            --success: #10b981;
+            --success-light: #34d399;
+            --warning: #f59e0b;
+            --warning-light: #fbbf24;
+            --error: #ef4444;
+            --error-light: #f87171;
+            --info: #3b82f6;
+            --info-light: #60a5fa;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-violet: #a78bfa;
+            --accent-pink: #f472b6;
+            --gradient-primary: linear-gradient(135deg, #00d9ff 0%, #0097ad 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+            --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.7);
         }
         
         body {
@@ -37,6 +52,53 @@
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(10, 185, 209, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+        
+        /* Enhanced animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(0, 217, 255, 0.5); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         
         .container {
@@ -49,11 +111,17 @@
         .navbar {
             position: sticky;
             top: 0;
-            background: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(10, 14, 39, 0.7);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
             z-index: 100;
             padding: 16px 0;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
         }
         
         .nav-content {
@@ -65,12 +133,18 @@
         .logo {
             font-size: 24px;
             font-weight: 700;
-            color: var(--primary);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .nav-links {
             display: flex;
-            gap: 24px;
+            gap: 16px;
         }
         
         .nav-link {
@@ -80,19 +154,33 @@
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 6px;
-            transition: all 0.2s;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
         
         .nav-link:hover {
             color: var(--text-primary);
-            background: var(--bg-surface);
+            background: var(--bg-elevated);
+            transform: translateY(-2px);
         }
         
         .nav-link.active {
-            color: var(--primary);
-            background: rgba(255, 107, 53, 0.1);
+            color: var(--bg-primary);
+            background: var(--gradient-primary);
+            box-shadow: 0 4px 16px rgba(0, 217, 255, 0.3);
         }
         
         /* Screens */
@@ -111,22 +199,47 @@
             margin: 0 auto;
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 32px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .setup-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .setup-card > * {
+            position: relative;
+            z-index: 1;
         }
         
         .setup-title {
-            font-size: 32px;
-            font-weight: 600;
+            font-size: 36px;
+            font-weight: 700;
             text-align: center;
             margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .setup-subtitle {
             color: var(--text-secondary);
             text-align: center;
             margin-bottom: 32px;
+            font-size: 16px;
         }
         
         .form-group {
@@ -145,33 +258,39 @@
             min-height: 120px;
             background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 14px;
             color: var(--text-primary);
             font-family: inherit;
             font-size: 14px;
             resize: vertical;
+            transition: all 0.3s ease;
         }
         
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
+            background: var(--bg-elevated);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
         }
         
         .form-input {
             width: 100%;
             background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 12px 14px;
             color: var(--text-primary);
             font-family: inherit;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
+            background: var(--bg-elevated);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
         }
         
         .form-hint {
@@ -191,73 +310,91 @@
         .plan-card {
             background: var(--bg-primary);
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
         
         .plan-card:hover {
             border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.2);
         }
         
         .plan-card.selected {
             border-color: var(--primary);
-            background: rgba(255, 107, 53, 0.05);
+            background: rgba(0, 217, 255, 0.05);
+            box-shadow: 0 0 0 1px var(--primary), 0 8px 20px rgba(0, 217, 255, 0.2);
         }
         
         .plan-name {
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--text-primary);
         }
         
         .plan-limit {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
         
         /* Buttons */
         .btn {
-            background: var(--primary);
-            color: white;
+            background: var(--gradient-primary);
+            color: var(--bg-primary);
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 14px 24px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: 100%;
+            box-shadow: 0 4px 16px rgba(0, 217, 255, 0.3);
         }
         
         .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
         }
         
         .btn:disabled {
             background: var(--text-muted);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
+            opacity: 0.6;
         }
         
         .btn-secondary {
             background: var(--bg-elevated);
             color: var(--text-primary);
             border: 1px solid var(--border);
+            box-shadow: none;
         }
         
         .btn-secondary:hover {
-            background: var(--border);
+            background: var(--bg-accent);
+            border-color: var(--primary);
         }
         
         .btn-success {
-            background: var(--success);
+            background: var(--gradient-success);
+            color: white;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
         }
         
         .btn-success:hover {
-            background: #2ea043;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
         }
         
         /* Loading Screen */
@@ -266,252 +403,323 @@
             margin: 0 auto;
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 32px;
+            border-radius: 16px;
+            padding: 40px;
             text-align: center;
+            animation: slideUp 0.6s ease-out;
+            box-shadow: var(--shadow-xl);
         }
         
         .loading-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 32px;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .pipeline-steps {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
         
         .pipeline-step {
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 16px;
+            padding: 16px 20px;
             background: var(--bg-primary);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            transition: all 0.3s;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .pipeline-step.active {
             border-color: var(--primary);
-            background: rgba(255, 107, 53, 0.1);
-            animation: pulse 2s infinite;
+            background: rgba(0, 217, 255, 0.08);
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
         }
         
         .pipeline-step.done {
             border-color: var(--success);
-            background: rgba(63, 185, 80, 0.1);
+            background: rgba(16, 185, 129, 0.08);
         }
         
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            0%, 100% { 
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+            }
+            50% { 
+                opacity: 0.8;
+                box-shadow: 0 0 30px rgba(0, 217, 255, 0.4);
+            }
         }
         
         .step-icon {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: var(--bg-elevated);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
             flex-shrink: 0;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         .pipeline-step.active .step-icon {
-            background: var(--primary);
-            color: white;
+            background: var(--gradient-primary);
+            color: var(--bg-primary);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
         }
         
         .pipeline-step.done .step-icon {
-            background: var(--success);
+            background: var(--gradient-success);
             color: white;
+            animation: scale 0.4s ease-out;
+        }
+        
+        @keyframes scale {
+            from { transform: scale(1.2); }
+            to { transform: scale(1); }
         }
         
         .step-text {
             font-weight: 500;
+            color: var(--text-primary);
         }
         
         /* Approval Dashboard */
         .dashboard-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-out;
         }
         
         .dashboard-title {
-            font-size: 28px;
-            font-weight: 600;
+            font-size: 32px;
+            font-weight: 700;
             margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .dashboard-subtitle {
             color: var(--text-secondary);
+            font-size: 16px;
         }
         
         .prospects-grid {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
         
         .prospect-card {
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            transition: all 0.2s;
+            border-radius: 14px;
+            padding: 28px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.5s ease-out backwards;
+        }
+        
+        .prospect-card:nth-child(n) {
+            animation-delay: calc(n * 0.1s);
         }
         
         .prospect-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 32px rgba(0, 217, 255, 0.15);
         }
         
         .prospect-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            gap: 16px;
         }
         
         .company-info h3 {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             margin-bottom: 4px;
+            color: var(--text-primary);
         }
         
         .company-summary {
             color: var(--text-secondary);
             font-size: 14px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
         
         .target-designation {
-            color: var(--info);
+            color: var(--info-light);
             font-size: 14px;
+            font-weight: 600;
         }
         
         .score-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .score-badge:hover {
+            transform: scale(1.05);
         }
         
         .score-high {
-            background: var(--success);
+            background: var(--gradient-success);
             color: white;
         }
         
         .score-medium {
-            background: var(--warning);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
         }
         
         .score-low {
-            background: var(--error);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
         }
         
         .signals-section {
-            margin: 16px 0;
-            padding-top: 16px;
+            margin: 20px 0;
+            padding-top: 20px;
             border-top: 1px solid var(--border);
         }
         
         .signals-title {
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text-primary);
+            font-size: 15px;
         }
         
         .signal-item {
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .signal-item:hover {
+            background: var(--bg-accent);
+            border-color: var(--primary);
         }
         
         .signal-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 14px;
+            font-size: 10px;
+            font-weight: 700;
             flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .signal-high {
-            background: var(--success);
-            color: white;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success-light);
         }
         
         .signal-medium {
-            background: var(--warning);
-            color: white;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning-light);
         }
         
         .signal-text {
             font-size: 14px;
             color: var(--text-secondary);
+            flex: 1;
+            line-height: 1.5;
         }
         
         .signal-verified {
             font-size: 12px;
             color: var(--accent-cyan);
             margin-left: auto;
+            flex-shrink: 0;
+            font-weight: 600;
         }
         
         .prospect-actions {
             display: flex;
             gap: 12px;
-            margin-top: 16px;
-            padding-top: 16px;
+            margin-top: 20px;
+            padding-top: 20px;
             border-top: 1px solid var(--border);
+            flex-wrap: wrap;
         }
         
         .fallback-email {
             flex: 1;
-            margin-right: 12px;
+            min-width: 200px;
         }
         
         .btn-small {
-            padding: 8px 16px;
+            padding: 10px 18px;
             font-size: 14px;
             width: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         
         /* Result States */
         .result-success {
-            background: rgba(63, 185, 80, 0.1);
-            border: 1px solid var(--success);
-            border-radius: 6px;
-            padding: 16px;
-            margin-top: 16px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1.5px solid var(--success);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 18px;
+            animation: slideUp 0.4s ease-out;
         }
         
         .result-error {
-            background: rgba(248, 81, 73, 0.1);
-            border: 1px solid var(--error);
-            border-radius: 6px;
-            padding: 16px;
-            margin-top: 16px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1.5px solid var(--error);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 18px;
+            animation: slideUp 0.4s ease-out;
         }
         
         .result-title {
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 15px;
         }
         
         .result-details {
             font-size: 14px;
             color: var(--text-secondary);
+            line-height: 1.6;
         }
         
         .expandable {
-            margin-top: 12px;
+            margin-top: 14px;
         }
         
         .expand-btn {
@@ -520,19 +728,28 @@
             color: var(--primary);
             cursor: pointer;
             font-size: 14px;
-            padding: 4px 0;
+            padding: 8px 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .expand-btn:hover {
+            color: var(--primary-hover);
         }
         
         .expand-content {
             display: none;
             margin-top: 12px;
-            padding: 12px;
+            padding: 14px;
             background: var(--bg-primary);
-            border-radius: 6px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-family: 'ui-monospace', monospace;
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.6;
             white-space: pre-wrap;
+            color: var(--text-secondary);
+            animation: slideUp 0.3s ease-out;
         }
         
         /* History Screen */
@@ -545,15 +762,21 @@
         .campaign-card {
             background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 14px;
+            padding: 22px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.5s ease-out backwards;
+        }
+        
+        .campaign-card:nth-child(n) {
+            animation-delay: calc(n * 0.1s);
         }
         
         .campaign-card:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.15);
         }
         
         .campaign-header {
@@ -564,44 +787,49 @@
         }
         
         .campaign-title {
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 4px;
+            color: var(--text-primary);
         }
         
         .campaign-meta {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .campaign-icp {
             color: var(--text-secondary);
             font-size: 14px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-height: 1.5;
         }
         
         .campaign-stats {
             display: flex;
-            gap: 16px;
+            gap: 20px;
             font-size: 14px;
         }
         
         .stat {
             color: var(--text-secondary);
+            font-weight: 500;
         }
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: var(--text-secondary);
+            animation: fadeIn 0.6s ease-out;
         }
         
         .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+            font-size: 72px;
+            margin-bottom: 20px;
+            opacity: 0.6;
         }
         
         /* Utilities */
@@ -609,10 +837,10 @@
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-top: 2px solid var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         
         @keyframes spin {
@@ -625,15 +853,328 @@
         }
         
         .text-success {
-            color: var(--success);
+            color: var(--success-light);
+            font-weight: 600;
         }
         
         .text-error {
-            color: var(--error);
+            color: var(--error-light);
+            font-weight: 600;
         }
         
         .text-warning {
-            color: var(--warning);
+            color: var(--warning-light);
+            font-weight: 600;
+        }
+        
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        .modal-content {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 0;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+        
+        .modal-content.modal-large {
+            max-width: 900px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .email-editor-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .editor-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .editor-actions .btn {
+            width: auto;
+            padding: 10px 20px;
+        }
+        
+        /* Analytics */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .analytics-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .analytics-card:hover {
+            border-color: var(--primary);
+            background: var(--bg-accent);
+        }
+        
+        .analytics-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .analytics-value {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .analytics-section {
+            margin-bottom: 24px;
+        }
+        
+        .analytics-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .analytics-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .analytics-item-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .analytics-item-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* Signal Visualization */
+        .signal-confidence-meter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 3px;
+        }
+        
+        .confidence-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 45px;
+            text-align: right;
+        }
+        
+        /* Sparkline chart */
+        .signal-sparkline {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 20px;
+            margin: 0 4px;
+        }
+        
+        .sparkline-bar {
+            width: 3px;
+            background: var(--primary);
+            border-radius: 1px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        .sparkline-bar:hover {
+            opacity: 1;
+            background: var(--info-light);
+        }
+        
+        /* Source attribution badges */
+        .source-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        
+        .freshness-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .freshness-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        
+        .freshness-dot.stale {
+            background: var(--warning);
+        }
+        
+        .freshness-dot.old {
+            background: var(--error);
+        }
+        
+        .signal-score-ring {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0deg, var(--primary) var(--score-degrees), var(--bg-primary) var(--score-degrees));
+            border: 2px solid var(--border);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* Filters Toolbar */
+        #filters-toolbar {
+            border-radius: 12px !important;
+        }
+        
+        #filters-toolbar .btn-small {
+            font-size: 13px;
+            padding: 9px 14px;
+            border-radius: 8px;
+        }
+        
+        #filter-status {
+            display: inline-block !important;
+        }
+        
+        @media (max-width: 768px) {
+            #filters-toolbar {
+                flex-direction: column;
+            }
+            
+            #filter-status {
+                width: 100%;
+                text-align: center !important;
+                margin-left: 0 !important;
+            }
         }
         
         /* Responsive */
@@ -649,11 +1190,64 @@
             
             .prospect-actions {
                 flex-direction: column;
+                gap: 10px;
             }
             
             .fallback-email {
                 margin-right: 0;
-                margin-bottom: 12px;
+                width: 100%;
+            }
+            
+            .btn-small {
+                width: 100%;
+            }
+            
+            .setup-title {
+                font-size: 28px;
+            }
+            
+            .dashboard-title {
+                font-size: 26px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .nav-links {
+                gap: 8px;
+            }
+            
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .setup-card {
+                padding: 24px;
+            }
+            
+            .loading-card {
+                padding: 24px;
+            }
+            
+            .setup-title {
+                font-size: 24px;
+            }
+            
+            .prospect-card {
+                padding: 20px;
+            }
+            
+            .campaign-stats {
+                flex-direction: column;
+                gap: 8px;
             }
         }
     </style>
@@ -771,6 +1365,70 @@
             
             <div class="history-grid" id="history-container">
                 <!-- History cards will be inserted here -->
+            </div>
+        </div>
+        
+        <!-- Email Preview Modal -->
+        <div id="email-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Email Preview & Editor</h3>
+                    <button class="modal-close" onclick="closeEmailModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="email-editor-layout">
+                        <div class="editor-section">
+                            <label class="form-label">Subject Line</label>
+                            <input type="text" id="email-subject" class="form-input" placeholder="Email subject">
+                        </div>
+                        <div class="editor-section">
+                            <label class="form-label">Email Body</label>
+                            <textarea id="email-body" class="form-textarea" placeholder="Email content"></textarea>
+                        </div>
+                        <div class="editor-actions">
+                            <button class="btn btn-secondary" onclick="closeEmailModal()">Cancel</button>
+                            <button class="btn" onclick="saveEmailDraft()">Save Draft</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Modal -->
+        <div id="analytics-modal" class="modal hidden">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3 class="modal-title">Campaign Analytics</h3>
+                    <button class="modal-close" onclick="closeAnalyticsModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-label">Total Prospects</div>
+                            <div class="analytics-value" id="analytics-total">0</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-label">Approved</div>
+                            <div class="analytics-value" id="analytics-approved">0</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-label">Sent</div>
+                            <div class="analytics-value" id="analytics-sent">0</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-label">Success Rate</div>
+                            <div class="analytics-value" id="analytics-rate">0%</div>
+                        </div>
+                    </div>
+                    <div class="analytics-section">
+                        <h4 class="analytics-title">Signal Breakdown</h4>
+                        <div id="signal-breakdown"></div>
+                    </div>
+                    <div class="analytics-section">
+                        <h4 class="analytics-title">Contact Sources</h4>
+                        <div id="contact-sources"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1031,6 +1689,11 @@
             data.prospects.forEach(prospect => {
                 container.appendChild(renderProspectCard(prospect));
             });
+            
+            // Add filtering UI after short delay to ensure DOM is ready
+            setTimeout(() => {
+                addFilteringUI();
+            }, 100);
         }
 
         // Render prospect card
@@ -1042,13 +1705,32 @@
             const scoreClass = prospect.signal_score >= 70 ? 'score-high' : 
                               prospect.signal_score >= 40 ? 'score-medium' : 'score-low';
             
-            const signalsHtml = prospect.signals.map(signal => `
-                <div class="signal-item">
-                    <span class="signal-badge signal-${signal.confidence.toLowerCase()}">${signal.confidence}</span>
-                    <span class="signal-text">${signal.signal}</span>
-                    <span class="signal-verified">${signal.verified_by === 'second_source' ? 'verified ✓' : 'single src'}</span>
-                </div>
-            `).join('');
+            const signalsHtml = prospect.signals.map(signal => {
+                const confidencePercent = signal.confidence === 'HIGH' ? 100 : signal.confidence === 'MEDIUM' ? 65 : 40;
+                const sources = typeof signal.verified_by === 'string' ? signal.verified_by.split(',').map(s => s.trim()) : [signal.verified_by];
+                const sourceHtml = sources.map(src => `<span class="source-badge">${src}</span>`).join('');
+                
+                return `
+                    <div class="signal-item">
+                        <span class="signal-badge signal-${signal.confidence.toLowerCase()}">${signal.confidence}</span>
+                        <div style="flex: 1;">
+                            <div class="signal-text">${signal.signal}</div>
+                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <div class="signal-confidence-meter" style="margin-top: 0;">
+                                    <div class="confidence-bar" style="width: 80px;">
+                                        <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
+                                    </div>
+                                    <span class="confidence-label">${confidencePercent}%</span>
+                                </div>
+                                ${sourceHtml}
+                                <span class="freshness-indicator">
+                                    <span class="freshness-dot"></span> Fresh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
             
             card.innerHTML = `
                 <div class="prospect-header">
@@ -1069,8 +1751,11 @@
                     <input type="email" class="form-input fallback-email" placeholder="Fallback email" 
                            value="${state.fallbackEmail}" id="fallback-${prospect.id}">
                     <button class="btn btn-secondary btn-small" onclick="skipProspect(${prospect.id})">Skip</button>
+                    <button class="btn btn-secondary btn-small" onclick="openEmailPreview(${prospect.id})">
+                        ✎ Edit Email
+                    </button>
                     <button class="btn btn-success btn-small" onclick="approveProspect(${prospect.id})">
-                        ✓ Approve & Send Outreach
+                        ✓ Approve & Send
                     </button>
                 </div>
                 
@@ -1270,6 +1955,248 @@ ${result.account_brief}
             return `${diffDays}d ago`;
         }
 
+        // Email Preview Functions
+        function openEmailPreview(prospectId) {
+            const prospect = state.prospects.find(p => p.id === prospectId);
+            const mockSubject = `Cybersecurity Training for ${prospect.company_name}'s Growth Phase`;
+            const mockBody = `Hi,\n\nI noticed ${prospect.company_name} ${prospect.signals[0].signal.toLowerCase()}. With your rapid expansion, ensuring your growing engineering team has proper cybersecurity training becomes critical.\n\nWe help Series B companies like ${prospect.company_name} implement comprehensive security training programs that scale with growth.\n\nWould you be open to a 15-minute call?\n\nBest regards,\nFireReach Team`;
+            
+            document.getElementById('email-subject').value = mockSubject;
+            document.getElementById('email-body').value = mockBody;
+            document.getElementById('email-modal').classList.remove('hidden');
+            state.currentProspectId = prospectId;
+        }
+        
+        function closeEmailModal() {
+            document.getElementById('email-modal').classList.add('hidden');
+        }
+        
+        function saveEmailDraft() {
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            const drafts = JSON.parse(localStorage.getItem('emailDrafts') || '{}');
+            drafts[state.currentProspectId] = { subject, body, timestamp: new Date().toISOString() };
+            localStorage.setItem('emailDrafts', JSON.stringify(drafts));
+            closeEmailModal();
+            alert('Email draft saved!');
+        }
+        
+        // Analytics Functions
+        function openAnalyticsModal() {
+            updateAnalytics();
+            document.getElementById('analytics-modal').classList.remove('hidden');
+        }
+        
+        function closeAnalyticsModal() {
+            document.getElementById('analytics-modal').classList.add('hidden');
+        }
+        
+        function updateAnalytics() {
+            const prospects = state.prospects || [];
+            const total = prospects.length;
+            const approved = prospects.filter(p => p.approval_status === 'approved').length;
+            const sent = prospects.filter(p => p.approval_status === 'sent').length;
+            const rate = total > 0 ? Math.round((sent / total) * 100) : 0;
+            
+            document.getElementById('analytics-total').textContent = total;
+            document.getElementById('analytics-approved').textContent = approved;
+            document.getElementById('analytics-sent').textContent = sent;
+            document.getElementById('analytics-rate').textContent = rate + '%';
+            
+            // Signal breakdown
+            const signalCounts = {};
+            prospects.forEach(p => {
+                p.signals.forEach(s => {
+                    const type = s.type.replace(/S\d_/, '');
+                    signalCounts[type] = (signalCounts[type] || 0) + 1;
+                });
+            });
+            
+            const signalHtml = Object.entries(signalCounts).map(([type, count]) => `
+                <div class="analytics-item">
+                    <div class="analytics-item-label">${type}</div>
+                    <div class="analytics-item-value">${count}</div>
+                </div>
+            `).join('');
+            document.getElementById('signal-breakdown').innerHTML = signalHtml;
+            
+            // Contact sources
+            const sourceMap = { apollo: 'Apollo', hunter: 'Hunter', user_provided: 'User Provided' };
+            const sources = {};
+            prospects.forEach(p => {
+                const source = p.target_designation || 'Unknown';
+                sources[source] = (sources[source] || 0) + 1;
+            });
+            
+            const sourceHtml = Object.entries(sources).map(([source, count]) => `
+                <div class="analytics-item">
+                    <div class="analytics-item-label">${source}</div>
+                    <div class="analytics-item-value">${count}</div>
+                </div>
+            `).join('');
+            document.getElementById('contact-sources').innerHTML = sourceHtml;
+        }
+        
+        // Advanced Filtering Functions
+        function filterProspectsByScore(minScore) {
+            const cards = document.querySelectorAll('.prospect-card');
+            cards.forEach(card => {
+                const scoreText = card.querySelector('.score-badge').textContent;
+                const score = parseInt(scoreText.match(/\d+/)[0]);
+                card.style.display = score >= minScore ? 'block' : 'none';
+            });
+        }
+        
+        function sortProspectsByScore(order = 'desc') {
+            const container = document.getElementById('prospects-container');
+            const cards = Array.from(container.querySelectorAll('.prospect-card'));
+            
+            cards.sort((a, b) => {
+                const scoreA = parseInt(a.querySelector('.score-badge').textContent.match(/\d+/)[0]);
+                const scoreB = parseInt(b.querySelector('.score-badge').textContent.match(/\d+/)[0]);
+                return order === 'desc' ? scoreB - scoreA : scoreA - scoreB;
+            });
+            
+            cards.forEach(card => container.appendChild(card));
+        }
+        
+        // Bulk Actions
+        function selectAllProspects() {
+            const checkboxes = document.querySelectorAll('.prospect-checkbox');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateBulkActionsPanel();
+        }
+        
+        function deselectAllProspects() {
+            const checkboxes = document.querySelectorAll('.prospect-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateBulkActionsPanel();
+        }
+        
+        function updateBulkActionsPanel() {
+            const checkboxes = document.querySelectorAll('.prospect-checkbox:checked');
+            const count = checkboxes.length;
+            const panel = document.getElementById('bulk-actions-panel');
+            if (panel) {
+                panel.innerHTML = `<div>${count} prospect${count !== 1 ? 's' : ''} selected</div>`;
+            }
+        }
+        
+        // Add this to the approval dashboard rendering
+        function addFilteringUI() {
+            const header = document.querySelector('.dashboard-header');
+            if (!document.getElementById('filters-toolbar')) {
+                const toolbar = document.createElement('div');
+                toolbar.id = 'filters-toolbar';
+                toolbar.style.cssText = `
+                    display: flex; 
+                    gap: 12px; 
+                    margin-bottom: 24px; 
+                    flex-wrap: wrap;
+                    padding: 16px;
+                    background: var(--bg-surface);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    animation: slideDown 0.3s ease-out;
+                `;
+                toolbar.innerHTML = `
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary btn-small" onclick="filterProspectsByScore(70)" title="Show only prospects with score 70 or higher">
+                            Score 70+
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="filterProspectsByScore(40)" title="Show all prospects">
+                            All Prospects
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="sortProspectsByScore('desc')" title="Sort by highest score first">
+                            Sort ↓ Score
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="sortProspectsByScore('asc')" title="Sort by lowest score first">
+                            Sort ↑ Score
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="openAnalyticsModal()">
+                            📊 Analytics
+                        </button>
+                    </div>
+                    <div id="filter-status" style="margin-left: auto; padding: 10px 16px; background: var(--bg-primary); border-radius: 8px; font-size: 13px; color: var(--text-secondary); min-width: 150px; text-align: right;">
+                        All prospects visible
+                    </div>
+                `;
+                header.parentNode.insertBefore(toolbar, header.nextSibling);
+            }
+        }
+        
+        // Enhanced filtering with status display
+        function filterProspectsByScore(minScore) {
+            const cards = document.querySelectorAll('.prospect-card');
+            let hiddenCount = 0;
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const scoreText = card.querySelector('.score-badge').textContent;
+                const score = parseInt(scoreText.match(/\d+/)[0]);
+                if (score >= minScore) {
+                    card.style.display = 'block';
+                    card.style.animation = 'slideUp 0.3s ease-out';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                    hiddenCount++;
+                }
+            });
+            
+            // Update filter status
+            const statusDiv = document.getElementById('filter-status');
+            if (statusDiv) {
+                if (hiddenCount === 0) {
+                    statusDiv.textContent = `All ${visibleCount} prospects visible`;
+                } else {
+                    statusDiv.textContent = `Showing ${visibleCount} of ${visibleCount + hiddenCount} (${hiddenCount} hidden)`;
+                }
+            }
+        }
+        
+        // Enhanced sorting with animation
+        function sortProspectsByScore(order = 'desc') {
+            const container = document.getElementById('prospects-container');
+            const cards = Array.from(container.querySelectorAll('.prospect-card'));
+            
+            cards.sort((a, b) => {
+                const scoreA = parseInt(a.querySelector('.score-badge').textContent.match(/\d+/)[0]);
+                const scoreB = parseInt(b.querySelector('.score-badge').textContent.match(/\d+/)[0]);
+                return order === 'desc' ? scoreB - scoreA : scoreA - scoreB;
+            });
+            
+            cards.forEach((card, index) => {
+                card.style.animation = `slideUp 0.3s ease-out ${index * 0.05}s backwards`;
+                container.appendChild(card);
+            });
+        }
+        
+        // Export functionality
+        function exportProspectsToCSV() {
+            const prospects = state.prospects || [];
+            const headers = ['Company', 'Score', 'Target Designation', 'Status', 'Signals'];
+            
+            const csvContent = [
+                headers.join(','),
+                ...prospects.map(p => [
+                    `"${p.company_name}"`,
+                    p.signal_score,
+                    `"${p.target_designation}"`,
+                    p.approval_status,
+                    `"${p.signals.length} signals"`
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `firereach-prospects-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
             // Set default values
