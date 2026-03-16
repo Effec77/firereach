@@ -1,56 +1,64 @@
 import os
 from groq import Groq
+from dotenv import load_dotenv
 
-def tool_research_analyst(company: str, signals: list, icp: str) -> dict:
-    """
-    Analyze signals and generate contextual account brief using Groq LLM.
-    """
+load_dotenv()
+
+def tool_research_analyst(company: str, signals: list, icp: str, contact: dict) -> dict:
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
-    signals_text = "\n".join([f"- {signal}" for signal in signals])
+    signals_text = ""
+    for s in signals:
+        signals_text += (
+            f"[{s['confidence']}] {s['signal']} "
+            f"(verified: {s.get('verified_by', 'single source')})\n"
+        )
     
-    prompt = f"""You are a B2B sales analyst. Analyze the following company signals and create an account brief.
+    contact_context = (
+        f"{contact.get('name', 'the team')} "
+        f"({contact.get('title', '')})"
+        if contact.get("name")
+        else "the leadership team"
+    )
+    
+    prompt = f"""You are a B2B GTM analyst. Generate a precise account brief.
 
 Company: {company}
+Decision Maker: {contact_context}
 
-Signals:
+VERIFIED SIGNALS (HIGH/MEDIUM confidence only):
 {signals_text}
 
-Ideal Customer Profile (ICP):
-{icp}
+ICP: {icp}
 
-Write EXACTLY two concise paragraphs. No more, no less.
+Write EXACTLY two paragraphs:
 
-Paragraph 1 (maximum 5 sentences):
-Explain the company's recent growth signals and what they indicate about the company's strategic direction. Reference specific signals.
+Paragraph 1: Describe the company's current growth phase using the verified signals. Reference signal types specifically (hiring activity, funding, training needs etc). Be specific, not generic. Max 5 sentences.
 
-Paragraph 2 (maximum 5 sentences):
-Explain how those signals align with the Ideal Customer Profile and identify potential business pain points the ICP solution could address.
+Paragraph 2: Connect those signals directly to the ICP value proposition. Name the specific pain points these signals create and why the ICP solution addresses them right now. Max 5 sentences.
 
-Requirements:
-- EXACTLY two paragraphs
-- Maximum 5 sentences per paragraph
-- Professional GTM analysis tone
-- No bullet points
-- No extra commentary
-- Reference signals directly"""
-
+Rules:
+- EXACTLY two paragraphs, no headers, no bullets
+- Only reference signals from the verified list above
+- Do not invent or assume signals not listed
+- Professional GTM analyst tone"""
+    
     try:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
+            temperature=0.6,
             max_tokens=500
         )
         
-        account_brief = response.choices[0].message.content
-        
         return {
             "company": company,
-            "account_brief": account_brief
+            "account_brief": response.choices[0].message.content,
+            "contact": contact
         }
     except Exception as e:
         return {
             "company": company,
-            "account_brief": f"Error generating brief: {str(e)}"
+            "account_brief": f"Error generating brief: {str(e)}",
+            "contact": contact
         }

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FireReach - Autonomous Outreach Engine</title>
-    <!-- Deployed version -->
     <style>
         * {
             margin: 0;
@@ -13,11 +12,11 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #1a1a2e;
             color: #e8e8e8;
+            padding: 20px;
+            line-height: 1.6;
         }
         
         .container {
@@ -25,118 +24,160 @@
             margin: 0 auto;
         }
         
-        .header {
+        header {
             text-align: center;
             margin-bottom: 40px;
         }
         
-        .header h1 {
+        h1 {
             font-size: 48px;
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
-        .header p {
-            font-size: 18px;
+        .subtitle {
             color: #b8b8b8;
+            font-size: 18px;
         }
         
-        .main-grid {
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            justify-content: center;
+        }
+        
+        .tab {
+            background: #0f3460;
+            border: none;
+            color: #e8e8e8;
+            padding: 12px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #16213e;
+        }
+        
+        .tab.active {
+            background: #ff6b35;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .grid {
             display: grid;
-            grid-template-columns: 450px 1fr;
-            gap: 30px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
         
         .card {
             background: #0f3460;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            border: 1px solid #16213e;
+            border-radius: 12px;
+            padding: 24px;
         }
         
-        .form-group {
+        .card h2 {
             margin-bottom: 20px;
+            color: #ff6b35;
+            font-size: 20px;
         }
         
         label {
             display: block;
-            font-weight: 600;
             margin-bottom: 8px;
-            color: #e8e8e8;
+            color: #b8b8b8;
             font-size: 14px;
         }
         
         input, textarea {
             width: 100%;
-            padding: 12px;
             background: #16213e;
-            border: 2px solid #1a1a2e;
+            border: 1px solid #0f3460;
             border-radius: 8px;
-            font-size: 14px;
+            padding: 12px;
             color: #e8e8e8;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #ff6b35;
+            font-size: 14px;
+            margin-bottom: 16px;
+            font-family: inherit;
         }
         
         textarea {
-            resize: vertical;
             min-height: 100px;
+            resize: vertical;
         }
         
         button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            background: #ff6b35;
             color: white;
             border: none;
+            padding: 14px 28px;
             border-radius: 8px;
+            cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s;
+            width: 100%;
         }
         
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+            background: #ff8555;
         }
         
         button:disabled {
-            opacity: 0.6;
+            background: #555;
             cursor: not-allowed;
-            transform: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #b8b8b8;
+        }
+        
+        .spinner {
+            border: 3px solid #0f3460;
+            border-top: 3px solid #ff6b35;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .pipeline {
-            margin-top: 30px;
-        }
-        
-        .pipeline h3 {
-            color: #ff6b35;
-            margin-bottom: 20px;
-            font-size: 18px;
+            margin-top: 24px;
         }
         
         .pipeline-step {
-            display: flex;
-            align-items: center;
-            padding: 12px;
             background: #16213e;
             border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #1a1a2e;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid transparent;
         }
         
         .pipeline-step.active {
             border-color: #ff6b35;
             background: rgba(255, 107, 53, 0.1);
+            animation: pulse 2s infinite;
         }
         
         .pipeline-step.complete {
@@ -144,20 +185,20 @@
             background: rgba(0, 217, 255, 0.1);
         }
         
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
         .step-icon {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #1a1a2e;
+            background: #0f3460;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            font-size: 16px;
-        }
-        
-        .pipeline-step.active .step-icon {
-            background: #ff6b35;
+            font-size: 18px;
         }
         
         .pipeline-step.complete .step-icon {
@@ -172,328 +213,667 @@
             display: block;
         }
         
-        .result-section {
-            margin-bottom: 25px;
+        .section {
+            margin-bottom: 32px;
         }
         
-        .result-section h3 {
+        .section h3 {
             color: #ff6b35;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             font-size: 18px;
         }
         
-        .signals-grid {
-            display: grid;
-            gap: 12px;
+        .contact-card {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .contact-row {
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .contact-label {
+            color: #b8b8b8;
+            min-width: 80px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge.apollo {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .badge.hunter {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .badge.user_provided {
+            background: #555;
+            color: white;
+        }
+        
+        .badge.not_found {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .badge.high {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .badge.medium {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .badge.sent {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .badge.failed {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .badge.no_email_found {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .badge.cache {
+            background: #555;
+            color: #e8e8e8;
         }
         
         .signal-card {
-            padding: 16px;
             background: #16213e;
-            border-radius: 12px;
-            border-left: 4px solid #ff6b35;
-            font-size: 14px;
-            line-height: 1.6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+        
+        .signal-text {
+            flex: 1;
+            margin-right: 12px;
+        }
+        
+        .signal-meta {
+            font-size: 12px;
+            color: #888;
         }
         
         .brief-text {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 20px;
             line-height: 1.8;
             color: #d0d0d0;
             white-space: pre-wrap;
-            font-size: 15px;
         }
         
         .email-preview {
             background: #16213e;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #1a1a2e;
-        }
-        
-        .email-header {
-            border-bottom: 1px solid #1a1a2e;
-            padding-bottom: 16px;
-            margin-bottom: 16px;
+            border-radius: 8px;
+            padding: 20px;
         }
         
         .email-subject {
             font-size: 18px;
             font-weight: 600;
-            color: #e8e8e8;
             margin-bottom: 8px;
         }
         
-        .email-meta {
-            font-size: 13px;
-            color: #b8b8b8;
+        .email-to {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 16px;
         }
         
         .email-body {
             line-height: 1.8;
-            color: #d0d0d0;
             white-space: pre-wrap;
-            font-size: 14px;
         }
         
         .status-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            text-align: center;
+            padding: 24px;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 12px 24px;
             border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .status-message {
+            color: #b8b8b8;
             font-size: 14px;
+        }
+        
+        .warning {
+            background: rgba(255, 165, 2, 0.1);
+            border: 1px solid #ffa502;
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffa502;
+            margin-bottom: 16px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #16213e;
+            padding: 12px;
+            text-align: left;
+            color: #ff6b35;
             font-weight: 600;
         }
         
-        .status-badge.sent {
-            background: #00d9ff;
-            color: #0f3460;
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #16213e;
         }
         
-        .status-badge.failed {
+        tr {
+            background: #0f3460;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        tr:nth-child(even) {
+            background: #16213e;
+        }
+        
+        tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .detail-panel {
+            background: #1a1a2e;
+            padding: 24px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #b8b8b8;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .refresh-btn {
+            background: #0f3460;
+            color: #e8e8e8;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            float: right;
+            margin-bottom: 16px;
+            width: auto;
+        }
+        
+        .refresh-btn:hover {
+            background: #16213e;
+        }
+        
+        .close-btn {
             background: #ff4757;
             color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 16px;
+            width: auto;
         }
         
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            border: 4px solid #1a1a2e;
-            border-top: 4px solid #ff6b35;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 1200px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1>🔥 FireReach</h1>
-            <p>Autonomous Outreach Engine</p>
+            <p class="subtitle">Autonomous Outreach Engine</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('outreach')">🚀 New Outreach</button>
+            <button class="tab" onclick="switchTab('history')">📋 History</button>
         </div>
         
-        <div class="main-grid">
-            <!-- Left Column: Input Form + Pipeline -->
-            <div>
-                <div class="card">
-                    <form id="firereach-form">
-                        <div class="form-group">
-                            <label for="icp">Ideal Customer Profile (ICP)</label>
-                            <textarea id="icp" placeholder="e.g., We sell high-end cybersecurity training to Series B startups" required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="company">Target Company</label>
-                            <input type="text" id="company" placeholder="e.g., Acme Corp" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">Recipient Email</label>
-                            <input type="email" id="email" placeholder="e.g., contact@company.com" required>
-                        </div>
-                        
-                        <button type="submit" id="submit-btn">🚀 Launch FireReach</button>
-                    </form>
-                    
-                    <div id="loading" class="loading" style="display: none;">
-                        <div class="spinner"></div>
-                        <p>Running autonomous agent pipeline...</p>
+        <!-- TAB 1: NEW OUTREACH -->
+        <div id="outreach-tab" class="tab-content active">
+            <div class="grid">
+                <!-- Left Column -->
+                <div>
+                    <div class="card" id="input-card">
+                        <h2>Launch Campaign</h2>
+                        <form id="outreach-form">
+                            <label>Ideal Customer Profile</label>
+                            <textarea id="icp" placeholder="e.g., We sell cybersecurity training to Series B startups" required></textarea>
+                            
+                            <label>Company Name</label>
+                            <input type="text" id="company" placeholder="e.g., Stripe" required>
+                            
+                            <label>Recipient Email (fallback if contact not found)</label>
+                            <input type="email" id="email" placeholder="e.g., cto@company.com" required>
+                            
+                            <button type="submit">🚀 Launch FireReach</button>
+                        </form>
                     </div>
                     
-                    <div class="pipeline" id="pipeline" style="display: none;">
-                        <h3>🤖 Agent Pipeline</h3>
-                        <div class="pipeline-step" id="step-1">
-                            <div class="step-icon">1</div>
-                            <div>Signal Harvesting</div>
+                    <div class="card pipeline" id="pipeline-card" style="display: none;">
+                        <h2>🤖 Agent Pipeline</h2>
+                        <div class="loading" id="loading-text">
+                            <div class="spinner"></div>
+                            <p>Running autonomous agent pipeline...</p>
                         </div>
-                        <div class="pipeline-step" id="step-2">
-                            <div class="step-icon">2</div>
-                            <div>Research Analysis</div>
-                        </div>
-                        <div class="pipeline-step" id="step-3">
-                            <div class="step-icon">3</div>
-                            <div>Outreach Generation</div>
-                        </div>
-                        <div class="pipeline-step" id="step-4">
-                            <div class="step-icon">4</div>
-                            <div>Email Dispatch</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Right Column: Results -->
-            <div class="card results" id="results">
-                <div class="result-section">
-                    <h3>📊 Signals Captured</h3>
-                    <div class="signals-grid" id="signals-list"></div>
-                </div>
-                
-                <div class="result-section">
-                    <h3>📝 Account Brief</h3>
-                    <div class="brief-text" id="account-brief"></div>
-                </div>
-                
-                <div class="result-section">
-                    <h3>📧 Generated Email</h3>
-                    <div class="email-preview">
-                        <div class="email-header">
-                            <div class="email-subject" id="email-subject"></div>
-                            <div class="email-meta">
-                                To: <span id="email-recipient"></span>
+                        <div id="pipeline-steps">
+                            <div class="pipeline-step" id="step-1">
+                                <div class="step-icon">1</div>
+                                <div>🔍 Signal Harvesting</div>
+                            </div>
+                            <div class="pipeline-step" id="step-2">
+                                <div class="step-icon">2</div>
+                                <div>✅ Signal Verification</div>
+                            </div>
+                            <div class="pipeline-step" id="step-3">
+                                <div class="step-icon">3</div>
+                                <div>📝 Account Research</div>
+                            </div>
+                            <div class="pipeline-step" id="step-4">
+                                <div class="step-icon">4</div>
+                                <div>✉️ Email Dispatch</div>
                             </div>
                         </div>
-                        <div class="email-body" id="email-body"></div>
                     </div>
                 </div>
                 
-                <div class="result-section">
-                    <h3>✉️ Email Status</h3>
-                    <div class="status-container">
-                        <span class="status-badge" id="email-status"></span>
+                <!-- Right Column -->
+                <div class="results" id="results-card">
+                    <!-- Contact Section -->
+                    <div class="section">
+                        <h3>👤 Contact Discovered</h3>
+                        <div class="contact-card" id="contact-info"></div>
+                    </div>
+                    
+                    <!-- Signals Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h3>⚡ Signals Captured</h3>
+                            <span id="cache-badge"></span>
+                        </div>
+                        <div id="signals-list"></div>
+                    </div>
+                    
+                    <!-- Account Brief Section -->
+                    <div class="section">
+                        <h3>📊 Account Brief</h3>
+                        <div class="brief-text" id="account-brief"></div>
+                    </div>
+                    
+                    <!-- Email Section -->
+                    <div class="section">
+                        <h3>✉️ Generated Email</h3>
+                        <div class="email-preview">
+                            <div class="email-subject" id="email-subject"></div>
+                            <div class="email-to" id="email-to"></div>
+                            <div class="email-body" id="email-body"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Section -->
+                    <div class="section">
+                        <h3>📤 Email Status</h3>
+                        <div class="status-container" id="status-container"></div>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- TAB 2: HISTORY -->
+        <div id="history-tab" class="tab-content">
+            <button class="refresh-btn" onclick="loadHistory()">🔄 Refresh</button>
+            <div style="clear: both;"></div>
+            <div id="history-content"></div>
         </div>
     </div>
     
     <script src="config.js"></script>
     <script>
-        const form = document.getElementById('firereach-form');
-        const loading = document.getElementById('loading');
-        const results = document.getElementById('results');
-        const pipeline = document.getElementById('pipeline');
-        const submitBtn = document.getElementById('submit-btn');
+        let currentTab = 'outreach';
+        let expandedRow = null;
         
-        function updatePipeline(step) {
-            for (let i = 1; i <= 4; i++) {
-                const stepEl = document.getElementById(`step-${i}`);
-                stepEl.classList.remove('active', 'complete');
-                if (i < step) {
-                    stepEl.classList.add('complete');
-                } else if (i === step) {
-                    stepEl.classList.add('active');
-                }
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            // Load history if switching to history tab
+            if (tab === 'history') {
+                loadHistory();
             }
         }
         
-        form.addEventListener('submit', async (e) => {
+        // Form submission
+        document.getElementById('outreach-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const icp = document.getElementById('icp').value;
             const company = document.getElementById('company').value;
             const email = document.getElementById('email').value;
             
-            // Show loading and pipeline
-            form.style.display = 'none';
-            loading.style.display = 'block';
-            pipeline.style.display = 'block';
-            results.classList.remove('show');
+            // Hide form, show pipeline
+            document.getElementById('input-card').style.display = 'none';
+            document.getElementById('pipeline-card').style.display = 'block';
+            document.getElementById('results-card').classList.remove('show');
             
-            // Simulate pipeline steps
-            updatePipeline(1);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            updatePipeline(2);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            updatePipeline(3);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            updatePipeline(4);
+            // Animate pipeline steps
+            animatePipeline();
             
             try {
-                // Add timeout to prevent infinite loading
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
-                
                 const response = await fetch(`${API_URL}/run-agent`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        icp: icp,
-                        company: company,
-                        recipient_email: email
-                    }),
-                    signal: controller.signal
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ icp, company, recipient_email: email })
                 });
-                
-                clearTimeout(timeoutId);
                 
                 const data = await response.json();
                 
-                // Display signals as cards
-                const signalsList = document.getElementById('signals-list');
-                signalsList.innerHTML = '';
-                data.signals.forEach(signal => {
-                    const card = document.createElement('div');
-                    card.className = 'signal-card';
-                    card.textContent = signal;
-                    signalsList.appendChild(card);
-                });
+                // Stop animation, mark all complete
+                stopPipelineAnimation();
                 
-                // Display account brief
-                document.getElementById('account-brief').textContent = data.account_brief;
-                
-                // Display email in preview
-                document.getElementById('email-subject').textContent = data.subject;
-                document.getElementById('email-recipient').textContent = email;
-                document.getElementById('email-body').textContent = data.generated_email;
-                
-                // Display email status
-                const statusBadge = document.getElementById('email-status');
-                statusBadge.textContent = data.status.toUpperCase();
-                statusBadge.className = 'status-badge ' + (data.status === 'sent' ? 'sent' : 'failed');
-                
-                // Show results
-                loading.style.display = 'none';
-                results.classList.add('show');
-                form.style.display = 'block';
-                
-                // Mark all pipeline steps as complete
-                for (let i = 1; i <= 4; i++) {
-                    document.getElementById(`step-${i}`).classList.add('complete');
-                    document.getElementById(`step-${i}`).classList.remove('active');
-                }
+                // Display results
+                displayResults(data);
                 
             } catch (error) {
-                console.error('Fetch error:', error);
-                let errorMessage = 'Failed to connect to backend. ';
-                
-                if (error.name === 'AbortError') {
-                    errorMessage = 'Request timed out. The backend server is taking too long to respond (likely cold start on free tier). Please wait 60 seconds and try again.';
-                } else if (error.message === 'Failed to fetch') {
-                    errorMessage += 'The backend server may be starting up (this can take 30-60 seconds on first request). Please try again in a moment.';
-                } else {
-                    errorMessage += error.message;
-                }
-                
-                alert(errorMessage);
-                loading.style.display = 'none';
-                form.style.display = 'block';
-                pipeline.style.display = 'none';
+                alert('Error: ' + error.message);
+                document.getElementById('input-card').style.display = 'block';
+                document.getElementById('pipeline-card').style.display = 'none';
             }
         });
+        
+        let pipelineInterval;
+        let currentStep = 1;
+        
+        function animatePipeline() {
+            currentStep = 1;
+            document.getElementById('step-1').classList.add('active');
+            
+            pipelineInterval = setInterval(() => {
+                if (currentStep < 4) {
+                    document.getElementById(`step-${currentStep}`).classList.remove('active');
+                    document.getElementById(`step-${currentStep}`).classList.add('complete');
+                    document.getElementById(`step-${currentStep}`).querySelector('.step-icon').textContent = '✓';
+                    
+                    currentStep++;
+                    document.getElementById(`step-${currentStep}`).classList.add('active');
+                }
+            }, 2000);
+        }
+        
+        function stopPipelineAnimation() {
+            clearInterval(pipelineInterval);
+            
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step-${i}`).classList.remove('active');
+                document.getElementById(`step-${i}`).classList.add('complete');
+                document.getElementById(`step-${i}`).querySelector('.step-icon').textContent = '✓';
+            }
+            
+            document.getElementById('loading-text').style.display = 'none';
+        }
+        
+        function displayResults(data) {
+            // Contact
+            const contact = data.contact_discovered;
+            let contactHTML = '';
+            
+            if (contact.source === 'not_found') {
+                contactHTML = '<div class="warning">⚠️ Contact not found — email used as fallback</div>';
+            }
+            
+            contactHTML += `
+                <div class="contact-row">
+                    <span class="contact-label">Name:</span>
+                    <span>${contact.name || 'Not found'}</span>
+                </div>
+                <div class="contact-row">
+                    <span class="contact-label">Title:</span>
+                    <span>${contact.title || 'Not found'}</span>
+                </div>
+                <div class="contact-row">
+                    <span class="contact-label">Email:</span>
+                    <span>${contact.email || 'Not found'}</span>
+                </div>
+                ${contact.linkedin_url ? `
+                <div class="contact-row">
+                    <span class="contact-label">LinkedIn:</span>
+                    <span><a href="${contact.linkedin_url}" target="_blank" style="color: #00d9ff;">${contact.linkedin_url}</a></span>
+                </div>
+                ` : ''}
+                <div class="contact-row">
+                    <span class="contact-label">Source:</span>
+                    <span class="badge ${contact.source}">${contact.source.toUpperCase().replace('_', ' ')}</span>
+                </div>
+            `;
+            document.getElementById('contact-info').innerHTML = contactHTML;
+            
+            // Cache badge
+            if (data.cache_hit) {
+                document.getElementById('cache-badge').innerHTML = '<span class="badge cache">⚡ From cache</span>';
+            }
+            
+            // Signals
+            const signalsHTML = data.signals.map(s => `
+                <div class="signal-card">
+                    <div class="signal-header">
+                        <div class="signal-text">${s.signal}</div>
+                        <span class="badge ${s.confidence.toLowerCase()}">${s.confidence}</span>
+                    </div>
+                    <div class="signal-meta">Verified by: ${s.verified_by}</div>
+                </div>
+            `).join('');
+            document.getElementById('signals-list').innerHTML = signalsHTML;
+            
+            // Account brief
+            document.getElementById('account-brief').textContent = data.account_brief;
+            
+            // Email
+            document.getElementById('email-subject').textContent = data.subject;
+            document.getElementById('email-to').textContent = `To: ${data.recipient}`;
+            document.getElementById('email-body').textContent = data.generated_email;
+            
+            // Status
+            let statusHTML = `<div class="status-badge badge ${data.status}">${data.status.toUpperCase().replace('_', ' ')}</div>`;
+            
+            if (data.status === 'sent') {
+                statusHTML += `<div class="status-message">✅ Email delivered to ${data.recipient}</div>`;
+            } else if (data.status === 'failed') {
+                statusHTML += `<div class="status-message">❌ Check your Resend API key and FROM_EMAIL</div>`;
+            } else if (data.status === 'no_email_found') {
+                statusHTML += `<div class="status-message">⚠️ Apollo and Hunter returned no email. Add recipient manually.</div>`;
+            }
+            
+            document.getElementById('status-container').innerHTML = statusHTML;
+            
+            // Show results
+            document.getElementById('results-card').classList.add('show');
+        }
+        
+        // History functions
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${API_URL}/history`);
+                const data = await response.json();
+                
+                if (data.runs.length === 0) {
+                    document.getElementById('history-content').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>No outreach runs yet. Launch your first campaign.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let tableHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Title</th>
+                                <th>Source</th>
+                                <th>Signals</th>
+                                <th>Status</th>
+                                <th>Subject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.runs.forEach(run => {
+                    tableHTML += `
+                        <tr onclick="toggleDetail(${run.id})">
+                            <td>${run.id}</td>
+                            <td>${new Date(run.created_at).toLocaleDateString()}</td>
+                            <td>${run.company}</td>
+                            <td>${run.contact_name || 'N/A'}</td>
+                            <td>${run.contact_title || 'N/A'}</td>
+                            <td><span class="badge ${run.contact_source}">${run.contact_source.toUpperCase().replace('_', ' ')}</span></td>
+                            <td><span style="color: #27ae60;">${run.high_confidence_count} verified</span></td>
+                            <td><span class="badge ${run.send_status}">${run.send_status.toUpperCase().replace('_', ' ')}</span></td>
+                            <td>${run.email_subject}</td>
+                        </tr>
+                        <tr id="detail-${run.id}" style="display: none;">
+                            <td colspan="9">
+                                <div class="detail-panel" id="detail-content-${run.id}"></div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += '</tbody></table>';
+                document.getElementById('history-content').innerHTML = tableHTML;
+                
+            } catch (error) {
+                alert('Error loading history: ' + error.message);
+            }
+        }
+        
+        async function toggleDetail(runId) {
+            const detailRow = document.getElementById(`detail-${runId}`);
+            
+            if (expandedRow === runId) {
+                detailRow.style.display = 'none';
+                expandedRow = null;
+                return;
+            }
+            
+            // Close previous
+            if (expandedRow) {
+                document.getElementById(`detail-${expandedRow}`).style.display = 'none';
+            }
+            
+            // Load detail
+            try {
+                const response = await fetch(`${API_URL}/history/${runId}`);
+                const run = await response.json();
+                
+                const signalsHTML = run.signals.map(s => `
+                    <div class="signal-card">
+                        <div class="signal-header">
+                            <div class="signal-text">${s.signal}</div>
+                            <span class="badge ${s.confidence.toLowerCase()}">${s.confidence}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById(`detail-content-${runId}`).innerHTML = `
+                    <h3 style="color: #ff6b35; margin-bottom: 16px;">Run Details</h3>
+                    <div class="detail-grid">
+                        <div>
+                            <h4 style="color: #00d9ff; margin-bottom: 12px;">Account Brief</h4>
+                            <div class="brief-text">${run.account_brief}</div>
+                        </div>
+                        <div>
+                            <h4 style="color: #00d9ff; margin-bottom: 12px;">Generated Email</h4>
+                            <div class="email-preview">
+                                <div class="email-subject">${run.email_subject}</div>
+                                <div class="email-body">${run.generated_email}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 24px;">
+                        <h4 style="color: #00d9ff; margin-bottom: 12px;">All Signals</h4>
+                        ${signalsHTML}
+                    </div>
+                    <button class="close-btn" onclick="toggleDetail(${runId})">Close</button>
+                `;
+                
+                detailRow.style.display = 'table-row';
+                expandedRow = runId;
+                
+            } catch (error) {
+                alert('Error loading detail: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>

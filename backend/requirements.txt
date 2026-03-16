@@ -3,5 +3,6 @@ uvicorn
 python-dotenv
 groq
 resend
-ddgs
+tavily-python
+httpx
 pydantic
