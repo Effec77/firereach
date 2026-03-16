@@ -665,8 +665,8 @@
             <div class="nav-content">
                 <div class="logo">🔥 FireReach</div>
                 <div class="nav-links">
-                    <button class="nav-link active" onclick="showScreen('setup')">New Campaign</button>
-                    <button class="nav-link" onclick="showScreen('history')">History</button>
+                    <button class="nav-link active" onclick="showScreenWithEvent(event, 'setup')">New Campaign</button>
+                    <button class="nav-link" onclick="showScreenWithEvent(event, 'history')">History</button>
                 </div>
             </div>
         </div>
@@ -789,13 +789,44 @@
             prospects: []
         };
 
+        // Screen management with event handling
+        function showScreenWithEvent(event, screenName) {
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenName + '-screen').classList.add('active');
+            
+            state.currentScreen = screenName;
+            
+            // Load data if needed
+            if (screenName === 'history') {
+                loadHistory();
+            }
+        }
+
         // Screen management
         function showScreen(screenName) {
             // Update nav links
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // Find and activate the correct nav link
+            const navLinks = document.querySelectorAll('.nav-link');
+            if (screenName === 'setup') {
+                navLinks[0].classList.add('active');
+            } else if (screenName === 'history') {
+                navLinks[1].classList.add('active');
+            } else if (screenName === 'approval') {
+                // Keep current active state for approval screen
+            }
             
             // Update screens
             document.querySelectorAll('.screen').forEach(screen => {
