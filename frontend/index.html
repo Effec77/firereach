@@ -832,6 +832,7 @@
             
             // Simulate the complete FireReach pipeline with mock data
             setTimeout(() => {
+                console.log('Pipeline timeout reached, preparing mock data...');
                 const mockData = {
                     campaign_id: 1,
                     status: "awaiting_approval",
@@ -936,12 +937,15 @@
                 state.currentCampaignId = mockData.campaign_id;
                 state.prospects = mockData.prospects;
                 
+                console.log('Mock data prepared, stopping animation...');
                 stopPipelineAnimation();
                 setTimeout(() => {
+                    console.log('Rendering approval dashboard...');
                     renderApprovalDashboard(mockData);
+                    console.log('Showing approval screen...');
                     showScreen('approval');
                 }, 1000);
-            }, 10000); // 10 seconds to show the complete pipeline
+            }, 5000); // 5 seconds to show the complete pipeline
         });
         // Pipeline animation
         let pipelineInterval;
