@@ -35,7 +35,7 @@ def harvest_and_verify_signals(company_name: str) -> list:
     ]
     
     # If Tavily API key exists, try real search, otherwise use mock
-    if TAVILY_API_KEY and TAVILY_API_KEY != "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":
+    if TAVILY_API_KEY:
         try:
             from tavily import TavilyClient
             client = TavilyClient(api_key=TAVILY_API_KEY)
@@ -64,7 +64,7 @@ def harvest_and_verify_signals(company_name: str) -> list:
 
 def discover_contact(company_name: str) -> dict:
     # Try Apollo first
-    if APOLLO_API_KEY and APOLLO_API_KEY != "KB62gXNW9zdxg29Ts8Tq_g":
+    if APOLLO_API_KEY:
         try:
             url = "https://api.apollo.io/v1/mixed_people/search"
             headers = {
@@ -96,7 +96,7 @@ def discover_contact(company_name: str) -> dict:
             pass
     
     # Try Hunter fallback
-    if HUNTER_API_KEY and HUNTER_API_KEY != "8779d16ecaae63b55931dfe8e4b9fd7ce05b0e60":
+    if HUNTER_API_KEY:
         try:
             domain_guess = company_name.lower().replace(" ", "") + ".com"
             url = "https://api.hunter.io/v2/domain-search"

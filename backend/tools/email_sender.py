@@ -65,7 +65,7 @@ Subject: [subject line here]
             try:
                 # Create message
                 msg = MIMEMultipart()
-                msg['From'] = os.getenv("FROM_EMAIL", "aaaditya169@gmail.com")
+                msg['From'] = os.getenv("FROM_EMAIL")
                 msg['To'] = recipient_email
                 msg['Subject'] = subject
                 
@@ -76,8 +76,8 @@ Subject: [subject line here]
                 server = smtplib.SMTP('smtp.gmail.com', 587)
                 server.starttls()
                 server.login(
-                    os.getenv("SMTP_USER", "aaaditya169@gmail.com"),
-                    os.getenv("SMTP_PASSWORD", "lqgq owim svsx slrs")
+                    os.getenv("SMTP_USER"),
+                    os.getenv("SMTP_PASSWORD")
                 )
                 
                 # Send email

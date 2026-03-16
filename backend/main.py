@@ -27,6 +27,18 @@ class AgentRequest(BaseModel):
 def health_check():
     return {"status": "FireReach API running"}
 
+@app.get("/test-env")
+def test_environment():
+    import os
+    return {
+        "groq_key_exists": bool(os.getenv("GROQ_API_KEY")),
+        "smtp_user_exists": bool(os.getenv("SMTP_USER")),
+        "smtp_password_exists": bool(os.getenv("SMTP_PASSWORD")),
+        "from_email_exists": bool(os.getenv("FROM_EMAIL")),
+        "apollo_key_exists": bool(os.getenv("APOLLO_API_KEY")),
+        "hunter_key_exists": bool(os.getenv("HUNTER_API_KEY"))
+    }
+
 @app.post("/run-agent")
 def run_agent_endpoint(request: AgentRequest):
     result = run_agent(
