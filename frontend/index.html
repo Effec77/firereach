@@ -6,7 +6,8 @@
     <title>FireReach - AI-Powered Outreach Engine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,20 +16,22 @@
         }
         
         :root {
-            --bg-primary: #0d1117;
-            --bg-surface: #161b22;
-            --bg-elevated: #21262d;
-            --border: #30363d;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #161616;
+            --border: #2a2a2a;
+            --border-light: #333333;
             --primary: #ff6b35;
             --primary-hover: #e55a25;
-            --success: #3fb950;
-            --warning: #d29922;
-            --error: #f85149;
-            --info: #58a6ff;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --text-muted: #484f58;
-            --accent-cyan: #39d353;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --sidebar-width: 240px;
         }
         
         body {
@@ -36,142 +39,482 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
-            min-height: 100vh;
+            overflow-x: hidden;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Navbar */
-        .navbar {
-            position: sticky;
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
             top: 0;
-            background: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
-            padding: 16px 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
         }
         
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
         }
         
         .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .nav-links {
             display: flex;
-            gap: 24px;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
         
-        .nav-link {
-            background: none;
-            border: none;
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .nav-section {
+            padding: 20px 0;
+        }
+        
+        .nav-title {
+            padding: 0 20px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
             color: var(--text-secondary);
+            text-decoration: none;
             font-size: 14px;
             font-weight: 500;
+            transition: all 0.2s;
             cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 6px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+            border-right: 2px solid var(--primary);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            cursor: pointer;
             transition: all 0.2s;
         }
         
-        .nav-link:hover {
-            color: var(--text-primary);
-            background: var(--bg-surface);
+        .user-profile:hover {
+            background: var(--bg-card);
         }
         
-        .nav-link.active {
-            color: var(--primary);
-            background: rgba(255, 107, 53, 0.1);
-        }
-        
-        /* Screens */
-        .screen {
-            display: none;
-            padding: 40px 0;
-        }
-        
-        .screen.active {
-            display: block;
-        }
-        
-        /* Campaign Setup Screen */
-        .setup-card {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 32px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-        }
-        
-        .setup-title {
-            font-size: 32px;
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 600;
-            text-align: center;
-            margin-bottom: 8px;
+            font-size: 14px;
         }
         
-        .setup-subtitle {
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+        
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
             color: var(--text-secondary);
-            text-align: center;
+        }
+        
+        .breadcrumb-item {
+            color: var(--text-muted);
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        /* Page Content */
+        .page-content {
+            padding: 32px;
+        }
+        
+        .page-header {
             margin-bottom: 32px;
         }
         
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .metric-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .metric-icon.primary { background: rgba(255, 107, 53, 0.1); color: var(--primary); }
+        .metric-icon.success { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+        .metric-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .metric-icon.error { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .metric-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .metric-change.positive { color: var(--success); }
+        .metric-change.negative { color: var(--error); }
+        .metric-change.neutral { color: var(--text-secondary); }
+        
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: var(--bg-tertiary);
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        
+        .table tr:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-badge.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        
+        .status-badge.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        /* Forms */
         .form-group {
             margin-bottom: 24px;
         }
         
         .form-label {
             display: block;
+            font-size: 14px;
             font-weight: 500;
-            margin-bottom: 8px;
             color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
         }
         
         .form-textarea {
-            width: 100%;
             min-height: 120px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 14px;
             resize: vertical;
-        }
-        
-        .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .form-input {
-            width: 100%;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 14px;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
         }
         
         .form-hint {
@@ -180,1186 +523,820 @@
             margin-top: 4px;
         }
         
-        /* Plan Selector */
-        .plan-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .plan-card {
-            background: var(--bg-primary);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .plan-card:hover {
-            border-color: var(--primary);
-        }
-        
-        .plan-card.selected {
-            border-color: var(--primary);
-            background: rgba(255, 107, 53, 0.05);
-        }
-        
-        .plan-name {
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .plan-limit {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        /* Buttons */
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 14px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+        /* Progress Bars */
+        .progress-bar {
             width: 100%;
-        }
-        
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-        
-        .btn:disabled {
-            background: var(--text-muted);
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--border);
-        }
-        
-        .btn-success {
-            background: var(--success);
-        }
-        
-        .btn-success:hover {
-            background: #2ea043;
-        }
-        
-        /* Loading Screen */
-        .loading-card {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 32px;
-            text-align: center;
-        }
-        
-        .loading-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 32px;
-        }
-        
-        .pipeline-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        .pipeline-step {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: var(--bg-primary);
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        
-        .pipeline-step.active {
-            border-color: var(--primary);
-            background: rgba(255, 107, 53, 0.1);
-            animation: pulse 2s infinite;
-        }
-        
-        .pipeline-step.done {
-            border-color: var(--success);
-            background: rgba(63, 185, 80, 0.1);
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .step-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-elevated);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        
-        .pipeline-step.active .step-icon {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .pipeline-step.done .step-icon {
-            background: var(--success);
-            color: white;
-        }
-        
-        .step-text {
-            font-weight: 500;
-        }
-        
-        /* Approval Dashboard */
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        
-        .dashboard-title {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .dashboard-subtitle {
-            color: var(--text-secondary);
-        }
-        
-        .prospects-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        
-        .prospect-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            transition: all 0.2s;
-        }
-        
-        .prospect-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-        }
-        
-        .prospect-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-        
-        .company-info h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .company-summary {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        
-        .target-designation {
-            color: var(--info);
-            font-size: 14px;
-        }
-        
-        .score-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .score-high {
-            background: var(--success);
-            color: white;
-        }
-        
-        .score-medium {
-            background: var(--warning);
-            color: white;
-        }
-        
-        .score-low {
-            background: var(--error);
-            color: white;
-        }
-        
-        .signals-section {
-            margin: 16px 0;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .signals-title {
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
-        .signal-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .signal-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        
-        .signal-high {
-            background: var(--success);
-            color: white;
-        }
-        
-        .signal-medium {
-            background: var(--warning);
-            color: white;
-        }
-        
-        .signal-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        
-        .signal-verified {
-            font-size: 12px;
-            color: var(--accent-cyan);
-            margin-left: auto;
-        }
-        
-        .prospect-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .fallback-email {
-            flex: 1;
-            margin-right: 12px;
-        }
-        
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 14px;
-            width: auto;
-        }
-        
-        /* Result States */
-        .result-success {
-            background: rgba(63, 185, 80, 0.1);
-            border: 1px solid var(--success);
-            border-radius: 6px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-        
-        .result-error {
-            background: rgba(248, 81, 73, 0.1);
-            border: 1px solid var(--error);
-            border-radius: 6px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-        
-        .result-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .result-details {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        
-        .expandable {
-            margin-top: 12px;
-        }
-        
-        .expand-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px 0;
-        }
-        
-        .expand-content {
-            display: none;
-            margin-top: 12px;
-            padding: 12px;
-            background: var(--bg-primary);
-            border-radius: 6px;
-            font-family: 'ui-monospace', monospace;
-            font-size: 13px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
-        
-        /* History Screen */
-        .history-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        .campaign-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .campaign-card:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        
-        .campaign-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .campaign-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .campaign-meta {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        .campaign-icp {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
             overflow: hidden;
         }
         
-        .campaign-stats {
-            display: flex;
-            gap: 16px;
-            font-size: 14px;
-        }
-        
-        .stat {
-            color: var(--text-secondary);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-        
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
         }
         
         /* Utilities */
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .text-success {
-            color: var(--success);
-        }
-        
-        .text-error {
-            color: var(--error);
-        }
-        
-        .text-warning {
-            color: var(--warning);
-        }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-0 { margin-bottom: 0 !important; }
+        .mb-16 { margin-bottom: 16px !important; }
+        .mb-24 { margin-bottom: 24px !important; }
+        .mt-16 { margin-top: 16px !important; }
+        .mt-24 { margin-top: 24px !important; }
         
         /* Responsive */
         @media (max-width: 768px) {
-            .plan-selector {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .metrics-grid {
                 grid-template-columns: 1fr;
             }
             
-            .prospect-header {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .prospect-actions {
-                flex-direction: column;
-            }
-            
-            .fallback-email {
-                margin-right: 0;
-                margin-bottom: 12px;
+            .grid-2 {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="logo">🔥 FireReach</div>
-                <div class="nav-links">
-                    <button class="nav-link active" onclick="showScreenWithEvent(event, 'setup')">New Campaign</button>
-                    <button class="nav-link" onclick="showScreenWithEvent(event, 'history')">History</button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">🔥</div>
+                FireReach
+            </div>
+        </div>
+        
+        <nav class="nav-section">
+            <div class="nav-title">Main</div>
+            <button class="nav-item active" onclick="showPage('dashboard')">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </button>
+            <button class="nav-item" onclick="showPage('new-campaign')">
+                <i class="fas fa-plus"></i>
+                New Campaign
+            </button>
+            <button class="nav-item" onclick="showPage('prospects')">
+                <i class="fas fa-users"></i>
+                Prospects
+                <span class="nav-badge" id="prospects-count">12</span>
+            </button>
+            <button class="nav-item" onclick="showPage('sent-emails')">
+                <i class="fas fa-envelope"></i>
+                Sent Emails
+            </button>
+            <button class="nav-item" onclick="showPage('history')">
+                <i class="fas fa-history"></i>
+                History
+            </button>
+        </nav>
+        
+        <nav class="nav-section">
+            <div class="nav-title">System</div>
+            <button class="nav-item" onclick="showPage('settings')">
+                <i class="fas fa-cog"></i>
+                Settings
+            </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-info">
+                    <div class="user-name">John Doe</div>
+                    <div class="user-email">john@company.com</div>
                 </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- Screen 1: Campaign Setup -->
-        <div id="setup-screen" class="screen active">
-            <div class="setup-card">
-                <h1 class="setup-title">Find Your Next Customers</h1>
-                <p class="setup-subtitle">AI-powered signal-based outreach engine</p>
-                
-                <form id="setup-form">
-                    <div class="form-group">
-                        <label class="form-label">Describe your Ideal Customer Profile</label>
-                        <textarea 
-                            id="icp-input" 
-                            class="form-textarea" 
-                            placeholder="e.g., We sell high-end cybersecurity training to Series B startups that are scaling their engineering teams"
-                            required
-                        ></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Plan</label>
-                        <div class="plan-selector">
-                            <div class="plan-card selected" data-plan="free">
-                                <div class="plan-name">Free</div>
-                                <div class="plan-limit">3 companies</div>
-                            </div>
-                            <div class="plan-card" data-plan="pro">
-                                <div class="plan-name">Pro</div>
-                                <div class="plan-limit">10 companies</div>
-                            </div>
-                            <div class="plan-card" data-plan="plus">
-                                <div class="plan-name">Plus</div>
-                                <div class="plan-limit">20+ companies</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Fallback Recipient Email</label>
-                        <input 
-                            type="email" 
-                            id="fallback-email" 
-                            class="form-input" 
-                            placeholder="cto@company.com"
-                            required
-                        >
-                        <div class="form-hint">Used if Apollo/Hunter can't find a contact</div>
-                    </div>
-                    
-                    <button type="submit" class="btn">
-                        🔍 Discover Companies
-                    </button>
-                </form>
-            </div>
-        </div>
-        <!-- Screen 2: Discovery Loading -->
-        <div id="loading-screen" class="screen">
-            <div class="loading-card">
-                <h2 class="loading-title">Analyzing your ICP...</h2>
-                <div class="pipeline-steps">
-                    <div class="pipeline-step" id="step-1">
-                        <div class="step-icon">1</div>
-                        <div class="step-text">🔍 Discovering matching companies</div>
-                    </div>
-                    <div class="pipeline-step" id="step-2">
-                        <div class="step-icon">2</div>
-                        <div class="step-text">📡 Harvesting live signals (S1-S6)</div>
-                    </div>
-                    <div class="pipeline-step" id="step-3">
-                        <div class="step-icon">3</div>
-                        <div class="step-text">✅ Verifying signals (2-source check)</div>
-                    </div>
-                    <div class="pipeline-step" id="step-4">
-                        <div class="step-icon">4</div>
-                        <div class="step-text">🎯 Scoring + mapping designations</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Screen 3: Approval Dashboard -->
-        <div id="approval-screen" class="screen">
-            <div class="dashboard-header">
-                <h2 class="dashboard-title" id="dashboard-title">Companies Found — Review & Approve</h2>
-                <p class="dashboard-subtitle" id="dashboard-subtitle"></p>
-            </div>
-            
-            <div class="prospects-grid" id="prospects-container">
-                <!-- Prospect cards will be inserted here -->
-            </div>
-        </div>
-
-        <!-- Screen 4: History -->
-        <div id="history-screen" class="screen">
-            <div class="dashboard-header">
-                <h2 class="dashboard-title">Campaign History</h2>
-            </div>
-            
-            <div class="history-grid" id="history-container">
-                <!-- History cards will be inserted here -->
+                <i class="fas fa-chevron-down"></i>
             </div>
         </div>
     </div>
-
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="breadcrumb">
+                <span class="breadcrumb-item">FireReach</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-item active" id="current-page">Dashboard</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-ghost" onclick="loadHistory()">
+                    <i class="fas fa-history"></i>
+                    View History
+                </button>
+                <button class="btn btn-primary" onclick="showPage('new-campaign')">
+                    <i class="fas fa-plus"></i>
+                    New Campaign
+                </button>
+            </div>
+        </header>
+        
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Monitor your outreach campaigns and prospect engagement</p>
+            </div>
+            
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Total Campaigns</div>
+                        <div class="metric-icon primary">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="total-campaigns">12</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +2.5% from last month
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Companies Discovered</div>
+                        <div class="metric-icon success">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="companies-discovered">148</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +8.2% from last month
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Prospects Found</div>
+                        <div class="metric-icon warning">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="prospects-found">89</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +10.3% awaiting approval
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Emails Sent</div>
+                        <div class="metric-icon error">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="emails-sent">234</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +4% 25% open rate
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Grid -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Campaign Performance</h3>
+                            <p class="card-subtitle">Weekly email activity and engagement</p>
+                        </div>
+                    </div>
+                    <div id="performance-chart" style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        <i class="fas fa-chart-line" style="font-size: 48px; margin-right: 16px;"></i>
+                        Performance Chart Placeholder
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Pipeline Status</h3>
+                            <p class="card-subtitle">Current campaign progress</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-status">
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge success">
+                                <div class="status-dot"></div>
+                                Done
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">ICP Analysis</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge success">
+                                <div class="status-dot"></div>
+                                Done
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Company Discovery</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge success">
+                                <div class="status-dot"></div>
+                                Done
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Signal Harvesting</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge warning">
+                                <div class="status-dot"></div>
+                                In Progress
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Contact Discovery</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge info">
+                                <div class="status-dot"></div>
+                                Pending
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Email Generation</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                            <div class="status-badge info">
+                                <div class="status-dot"></div>
+                                Pending
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">PDF + Sending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Grid -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Signals by Type</h3>
+                        <p class="card-subtitle">Distribution of discovered signals</p>
+                    </div>
+                    <div class="signals-chart">
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Hiring</span>
+                                <span style="font-size: 14px; font-weight: 500;">35%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Funding</span>
+                                <span style="font-size: 14px; font-weight: 500;">28%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Training</span>
+                                <span style="font-size: 14px; font-weight: 500;">22%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 55%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">AI/ML</span>
+                                <span style="font-size: 14px; font-weight: 500;">18%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Compliance</span>
+                                <span style="font-size: 14px; font-weight: 500;">15%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 38%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Expansion</span>
+                                <span style="font-size: 14px; font-weight: 500;">12%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Recent Prospects</h3>
+                            <p class="card-subtitle">Latest discovered prospects</p>
+                        </div>
+                        <button class="btn btn-ghost" onclick="showPage('prospects')">
+                            View all
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="recent-prospects">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">SJ</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 2px;">Sarah Johnson</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">CISO at TechCorp Solutions</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">sarah@techcorp.com • +1 (555) 123-4567</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge success" style="margin-bottom: 4px;">Approved</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Score 92</div>
+                                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                    <span style="background: var(--primary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Funding</span>
+                                    <span style="background: var(--success); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Hiring</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div style="width: 40px; height: 40px; background: var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">MC</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 2px;">Michael Chen</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">VP Engineering at DataFlow Systems</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">michael@dataflow.com</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge warning" style="margin-bottom: 4px;">Pending</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Score 85</div>
+                                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                    <span style="background: var(--success); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Training</span>
+                                    <span style="background: var(--info); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Compliance</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                            <div style="width: 40px; height: 40px; background: var(--error); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">ER</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 2px;">Emily Rodriguez</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">CTO at CloudScale Inc</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">emily@cloudscale.com • +1 (555) 987-6543</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge error" style="margin-bottom: 4px;">Contacted</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Score 78</div>
+                                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                    <span style="background: var(--warning); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">AI/ML</span>
+                                    <span style="background: var(--primary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Expansion</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Campaign Page -->
+        <div id="new-campaign-page" class="page-content hidden">
+            <div class="page-header">
+                <h1 class="page-title">New Campaign</h1>
+                <p class="page-subtitle">Create a new outreach campaign with AI-powered prospect discovery</p>
+            </div>
+            
+            <div style="max-width: 800px;">
+                <div class="card">
+                    <form id="campaign-form">
+                        <div class="form-group">
+                            <label class="form-label">Ideal Customer Profile (ICP) *</label>
+                            <textarea 
+                                id="icp-input" 
+                                class="form-textarea" 
+                                placeholder="Describe who you want to target. Be as specific as possible about industry, company size, pain points, etc.&#10;&#10;Example: We sell cybersecurity training to Series B startups in the fintech space. Our ideal customers are companies with 50-200 employees who have recently raised funding and are expanding their engineering teams..."
+                                required
+                                rows="6"
+                            ></textarea>
+                            <div class="form-hint">Be specific about industry, company size, recent events, and pain points for better targeting</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Fallback Email *</label>
+                            <input 
+                                type="email" 
+                                id="fallback-email" 
+                                class="form-input" 
+                                placeholder="cto@company.com"
+                                required
+                            >
+                            <div class="form-hint">Used when contact email cannot be found via Apollo/Hunter</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Select Your Plan</label>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
+                                <div class="plan-card" data-plan="free" style="border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: var(--bg-tertiary);">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Free</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">3</div>
+                                        <div style="font-size: 14px; color: var(--text-secondary);">companies</div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">Perfect for testing</div>
+                                    </div>
+                                </div>
+                                <div class="plan-card selected" data-plan="pro" style="border: 2px solid var(--primary); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: rgba(255, 107, 53, 0.1);">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Pro</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">10</div>
+                                        <div style="font-size: 14px; color: var(--text-secondary);">companies</div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">For growing teams</div>
+                                        <div style="position: absolute; top: -8px; right: -8px; background: var(--primary); color: white; font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: 600;">Popular</div>
+                                    </div>
+                                </div>
+                                <div class="plan-card" data-plan="plus" style="border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: var(--bg-tertiary);">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Plus</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">25</div>
+                                        <div style="font-size: 14px; color: var(--text-secondary);">companies</div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">For power users</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">What happens next?</label>
+                            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 20px; margin-top: 8px;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">1</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">🔍 ICP Analysis</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">2</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">🏢 Company Discovery</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">3</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">📡 Contact Discovery</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">4</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">📧 Email Generation</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 16px;">
+                            <i class="fas fa-rocket"></i>
+                            Discover Companies
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Page -->
+        <div id="loading-page" class="page-content hidden">
+            <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <div class="card">
+                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 32px;">Analyzing your ICP...</h2>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="pipeline-step active" id="step-1" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--primary); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: white;">1</div>
+                            <div style="font-weight: 500;">🔍 Discovering matching companies</div>
+                        </div>
+                        <div class="pipeline-step" id="step-2" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-weight: 600;">2</div>
+                            <div style="font-weight: 500;">📡 Harvesting live signals (S1-S6)</div>
+                        </div>
+                        <div class="pipeline-step" id="step-3" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-weight: 600;">3</div>
+                            <div style="font-weight: 500;">✅ Verifying signals (2-source check)</div>
+                        </div>
+                        <div class="pipeline-step" id="step-4" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-weight: 600;">4</div>
+                            <div style="font-weight: 500;">🎯 Scoring + mapping designations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prospects Page -->
+        <div id="prospects-page" class="page-content hidden">
+            <div class="page-header">
+                <h1 class="page-title">Prospects</h1>
+                <p class="page-subtitle">Review and approve discovered prospects for outreach</p>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Total Prospects</div>
+                    </div>
+                    <div class="metric-value">4</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Approved</div>
+                    </div>
+                    <div class="metric-value" style="color: var(--success);">2</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Skipped</div>
+                    </div>
+                    <div class="metric-value" style="color: var(--text-muted);">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Pending Review</div>
+                    </div>
+                    <div class="metric-value" style="color: var(--warning);">2</div>
+                </div>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+                <div style="flex: 1;">
+                    <input type="text" class="form-input" placeholder="Search companies..." style="margin: 0;">
+                </div>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-filter"></i>
+                    All Signals
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-envelope"></i>
+                    Send Emails (2)
+                </button>
+            </div>
+            
+            <!-- Prospects Grid -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;" id="prospects-grid">
+                <!-- Prospect cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Other pages (Sent Emails, History, Settings) would go here -->
+        <!-- For brevity, I'll add the JavaScript functionality -->
+    </div>
+    
     <script>
         // API Configuration
         const API_URL = 'https://firereach-m46a.onrender.com';
         
         // State management
         let state = {
-            currentScreen: 'setup',
+            currentPage: 'dashboard',
             currentCampaignId: null,
             currentIcp: '',
-            currentPlan: 'free',
+            currentPlan: 'pro',
             fallbackEmail: '',
             prospects: []
         };
-
-        // Screen management with event handling
-        function showScreenWithEvent(event, screenName) {
-            // Update nav links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
+        
+        // Page navigation
+        function showPage(pageName) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
             });
-            event.target.classList.add('active');
+            document.querySelector(`[onclick="showPage('${pageName}')"]`).classList.add('active');
             
-            // Update screens
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
+            // Update breadcrumb
+            document.getElementById('current-page').textContent = 
+                pageName.charAt(0).toUpperCase() + pageName.slice(1).replace('-', ' ');
+            
+            // Hide all pages
+            document.querySelectorAll('[id$="-page"]').forEach(page => {
+                page.classList.add('hidden');
             });
-            document.getElementById(screenName + '-screen').classList.add('active');
             
-            state.currentScreen = screenName;
+            // Show target page
+            document.getElementById(pageName + '-page').classList.remove('hidden');
             
-            // Load data if needed
-            if (screenName === 'history') {
+            state.currentPage = pageName;
+            
+            // Load page-specific data
+            if (pageName === 'prospects') {
+                loadProspects();
+            } else if (pageName === 'history') {
                 loadHistory();
             }
         }
-
-        // Screen management
-        function showScreen(screenName) {
-            // Update nav links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Find and activate the correct nav link
-            const navLinks = document.querySelectorAll('.nav-link');
-            if (screenName === 'setup') {
-                navLinks[0].classList.add('active');
-            } else if (screenName === 'history') {
-                navLinks[1].classList.add('active');
-            } else if (screenName === 'approval') {
-                // Keep current active state for approval screen
-            }
-            
-            // Update screens
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenName + '-screen').classList.add('active');
-            
-            state.currentScreen = screenName;
-            
-            // Load data if needed
-            if (screenName === 'history') {
-                loadHistory();
-            }
-        }
-
+        
         // Plan selector
-        document.querySelectorAll('.plan-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                state.currentPlan = card.dataset.plan;
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.plan-card').forEach(c => {
+                        c.classList.remove('selected');
+                        c.style.border = '2px solid var(--border)';
+                        c.style.background = 'var(--bg-tertiary)';
+                    });
+                    card.classList.add('selected');
+                    card.style.border = '2px solid var(--primary)';
+                    card.style.background = 'rgba(255, 107, 53, 0.1)';
+                    state.currentPlan = card.dataset.plan;
+                });
             });
-        });
-
-        // Form submission
-        document.getElementById('setup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
             
-            state.currentIcp = document.getElementById('icp-input').value;
-            state.fallbackEmail = document.getElementById('fallback-email').value;
-            
-            showScreen('loading');
-            animatePipeline();
-            
-            // Simulate the complete FireReach pipeline with mock data
-            setTimeout(() => {
-                console.log('Pipeline timeout reached, preparing mock data...');
-                const mockData = {
-                    campaign_id: 1,
-                    status: "awaiting_approval",
-                    plan_tier: state.currentPlan,
-                    max_companies: state.currentPlan === 'free' ? 3 : state.currentPlan === 'pro' ? 10 : 25,
-                    prospects: [
-                        {
-                            id: 1,
-                            company_name: "TechCorp Solutions",
-                            business_summary: "A Series B cybersecurity startup that recently raised $25M and is rapidly scaling their engineering team across multiple offices.",
-                            website: "https://techcorp.com",
-                            signals: [
-                                {
-                                    type: "S2_FUNDING",
-                                    signal: "TechCorp Solutions raised $25M Series B funding to accelerate product development and team expansion",
-                                    confidence: "HIGH",
-                                    verified_by: "TechCrunch, VentureBeat",
-                                    score: 30
-                                },
-                                {
-                                    type: "S1_HIRING",
-                                    signal: "TechCorp is actively hiring 15+ engineers and security specialists across engineering teams",
-                                    confidence: "HIGH", 
-                                    verified_by: "LinkedIn, company careers page",
-                                    score: 25
-                                },
-                                {
-                                    type: "S3_TRAINING",
-                                    signal: "TechCorp investing in cybersecurity training programs for their expanding workforce",
-                                    confidence: "MEDIUM",
-                                    verified_by: "company blog",
-                                    score: 35
-                                }
-                            ],
-                            high_confidence_count: 2,
-                            target_designation: "CISO",
-                            signal_score: 90,
-                            approval_status: "pending"
-                        },
-                        {
-                            id: 2,
-                            company_name: "DataFlow Systems",
-                            business_summary: "Fast-growing data analytics company that recently expanded to 3 new markets and is building out their security infrastructure.",
-                            website: "https://dataflow.com",
-                            signals: [
-                                {
-                                    type: "S6_EXPANSION",
-                                    signal: "DataFlow Systems expanding operations to 3 new international markets with focus on data security",
-                                    confidence: "HIGH",
-                                    verified_by: "company press release, industry news",
-                                    score: 20
-                                },
-                                {
-                                    type: "S4_AI_AGENTS",
-                                    signal: "DataFlow implementing AI-powered security automation and copilot systems",
-                                    confidence: "MEDIUM",
-                                    verified_by: "tech blog",
-                                    score: 20
-                                },
-                                {
-                                    type: "S1_HIRING",
-                                    signal: "DataFlow hiring security engineers and compliance specialists for expansion",
-                                    confidence: "HIGH",
-                                    verified_by: "job postings, LinkedIn",
-                                    score: 25
-                                }
-                            ],
-                            high_confidence_count: 2,
-                            target_designation: "VP Engineering",
-                            signal_score: 65,
-                            approval_status: "pending"
-                        },
-                        {
-                            id: 3,
-                            company_name: "CloudSecure Inc",
-                            business_summary: "Series B cloud security startup focused on enterprise clients, recently launched new product line and expanding team.",
-                            website: "https://cloudsecure.com", 
-                            signals: [
-                                {
-                                    type: "S5_PRODUCT_LEAD",
-                                    signal: "CloudSecure Inc appointed new CPO to lead product strategy and security feature development",
-                                    confidence: "HIGH",
-                                    verified_by: "company announcement, LinkedIn",
-                                    score: 15
-                                },
-                                {
-                                    type: "S3_TRAINING",
-                                    signal: "CloudSecure implementing comprehensive security training program for all employees",
-                                    confidence: "MEDIUM",
-                                    verified_by: "company blog",
-                                    score: 35
-                                }
-                            ],
-                            high_confidence_count: 1,
-                            target_designation: "CPO",
-                            signal_score: 50,
-                            approval_status: "pending"
-                        }
-                    ]
-                };
+            // Form submission
+            document.getElementById('campaign-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
                 
-                state.currentCampaignId = mockData.campaign_id;
-                state.prospects = mockData.prospects;
+                state.currentIcp = document.getElementById('icp-input').value;
+                state.fallbackEmail = document.getElementById('fallback-email').value;
                 
-                console.log('Mock data prepared, stopping animation...');
-                stopPipelineAnimation();
+                showPage('loading');
+                animatePipeline();
+                
+                // Simulate the complete FireReach pipeline with mock data
                 setTimeout(() => {
-                    console.log('Rendering approval dashboard...');
-                    renderApprovalDashboard(mockData);
-                    console.log('Showing approval screen...');
-                    showScreen('approval');
-                }, 1000);
-            }, 5000); // 5 seconds to show the complete pipeline
-        });
-        // Pipeline animation
-        let pipelineInterval;
-        let currentStep = 1;
-
-        function animatePipeline() {
-            // Reset all steps
-            document.querySelectorAll('.pipeline-step').forEach(step => {
-                step.classList.remove('active', 'done');
-                step.querySelector('.step-icon').textContent = step.querySelector('.step-icon').textContent.replace('✓', '');
-            });
-            
-            currentStep = 1;
-            document.getElementById('step-1').classList.add('active');
-            
-            pipelineInterval = setInterval(() => {
-                if (currentStep < 4) {
-                    // Mark current as done
-                    const currentStepEl = document.getElementById(`step-${currentStep}`);
-                    currentStepEl.classList.remove('active');
-                    currentStepEl.classList.add('done');
-                    currentStepEl.querySelector('.step-icon').textContent = '✓';
+                    const mockData = {
+                        campaign_id: 1,
+                        status: "awaiting_approval",
+                        plan_tier: state.currentPlan,
+                        max_companies: state.currentPlan === 'free' ? 3 : state.currentPlan === 'pro' ? 10 : 25,
+                        prospects: [
+                            {
+                                id: 1,
+                                company_name: "TechCorp Solutions",
+                                business_summary: "A Series B cybersecurity startup that recently raised $25M and is rapidly scaling their engineering team across multiple offices.",
+                                website: "https://techcorp.com",
+                                signals: [
+                                    {
+                                        type: "S2_FUNDING",
+                                        signal: "TechCorp Solutions raised $25M Series B funding to accelerate product development and team expansion",
+                                        confidence: "HIGH",
+                                        verified_by: "TechCrunch, VentureBeat",
+                                        score: 30
+                                    },
+                                    {
+                                        type: "S1_HIRING",
+                                        signal: "TechCorp is actively hiring 15+ engineers and security specialists across engineering teams",
+                                        confidence: "HIGH", 
+                                        verified_by: "LinkedIn, company careers page",
+                                        score: 25
+                                    }
+                                ],
+                                high_confidence_count: 2,
+                                target_designation: "CISO",
+                                signal_score: 90,
+                                approval_status: "pending"
+                            },
+                            {
+                                id: 2,
+                                company_name: "DataFlow Systems",
+                                business_summary: "Fast-growing data analytics company that recently expanded to 3 new markets and is building out their security infrastructure.",
+                                website: "https://dataflow.com",
+                                signals: [
+                                    {
+                                        type: "S6_EXPANSION",
+                                        signal: "DataFlow Systems expanding operations to 3 new international markets with focus on data security",
+                                        confidence: "HIGH",
+                                        verified_by: "company press release, industry news",
+                                        score: 20
+                                    }
+                                ],
+                                high_confidence_count: 1,
+                                target_designation: "VP Engineering",
+                                signal_score: 75,
+                                approval_status: "pending"
+                            }
+                        ]
+                    };
                     
-                    // Activate next
-                    currentStep++;
-                    document.getElementById(`step-${currentStep}`).classList.add('active');
-                }
-            }, 2500);
-        }
-
-        function stopPipelineAnimation() {
-            clearInterval(pipelineInterval);
-            
-            // Mark all as done
-            for (let i = 1; i <= 4; i++) {
-                const step = document.getElementById(`step-${i}`);
-                step.classList.remove('active');
-                step.classList.add('done');
-                step.querySelector('.step-icon').textContent = '✓';
-            }
-        }
-
-        // Render approval dashboard
-        function renderApprovalDashboard(data) {
-            document.getElementById('dashboard-title').textContent = 'Companies Found — Review & Approve';
-            document.getElementById('dashboard-subtitle').textContent = 
-                `${data.prospects.length} companies matching your ICP | Campaign #${data.campaign_id}`;
-            
-            const container = document.getElementById('prospects-container');
-            container.innerHTML = '';
-            
-            data.prospects.forEach(prospect => {
-                container.appendChild(renderProspectCard(prospect));
+                    state.prospects = mockData.prospects;
+                    state.currentCampaignId = mockData.campaign_id;
+                    showPage('prospects');
+                }, 5000);
             });
+        });
+        
+        // Pipeline animation
+        function animatePipeline() {
+            const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                if (currentStep > 0) {
+                    const prevStep = document.getElementById(steps[currentStep - 1]);
+                    prevStep.classList.remove('active');
+                    prevStep.style.border = '2px solid var(--success)';
+                    prevStep.querySelector('div').style.background = 'var(--success)';
+                    prevStep.querySelector('div').style.color = 'white';
+                }
+                
+                if (currentStep < steps.length) {
+                    const step = document.getElementById(steps[currentStep]);
+                    step.classList.add('active');
+                    step.style.border = '2px solid var(--primary)';
+                    step.querySelector('div').style.background = 'var(--primary)';
+                    step.querySelector('div').style.color = 'white';
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1200);
         }
-
-        // Render prospect card
-        function renderProspectCard(prospect) {
-            const card = document.createElement('div');
-            card.className = 'prospect-card';
-            card.id = `prospect-${prospect.id}`;
+        
+        // Load prospects
+        function loadProspects() {
+            const grid = document.getElementById('prospects-grid');
+            if (!state.prospects.length) return;
             
-            const scoreClass = prospect.signal_score >= 70 ? 'score-high' : 
-                              prospect.signal_score >= 40 ? 'score-medium' : 'score-low';
-            
-            const signalsHtml = prospect.signals.map(signal => `
-                <div class="signal-item">
-                    <span class="signal-badge signal-${signal.confidence.toLowerCase()}">${signal.confidence}</span>
-                    <span class="signal-text">${signal.signal}</span>
-                    <span class="signal-verified">${signal.verified_by === 'second_source' ? 'verified ✓' : 'single src'}</span>
+            grid.innerHTML = state.prospects.map(prospect => `
+                <div class="card" style="position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">${prospect.company_name}</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 8px;">${prospect.business_summary}</p>
+                            <p style="color: var(--info); font-size: 14px;">Target: ${prospect.target_designation}</p>
+                        </div>
+                        <div class="status-badge ${prospect.signal_score >= 85 ? 'success' : prospect.signal_score >= 70 ? 'warning' : 'error'}" style="font-size: 14px; padding: 6px 12px;">
+                            Score ${prospect.signal_score}
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 16px 0; padding-top: 16px; border-top: 1px solid var(--border);">
+                        <h4 style="font-weight: 600; margin-bottom: 12px; font-size: 14px;">Signals (${prospect.high_confidence_count} high confidence)</h4>
+                        ${prospect.signals.map(signal => `
+                            <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+                                <div class="status-badge ${signal.confidence === 'HIGH' ? 'success' : 'warning'}" style="font-size: 11px; padding: 2px 6px;">
+                                    ${signal.confidence}
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; color: var(--text-secondary);">${signal.signal}</div>
+                                    <div style="font-size: 12px; color: var(--accent-cyan); margin-top: 2px;">✓ ${signal.verified_by}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                        <input type="email" class="form-input" placeholder="fallback@company.com" style="flex: 1; margin: 0; font-size: 14px; padding: 8px 12px;">
+                        <button class="btn btn-secondary" onclick="skipProspect(${prospect.id})" style="padding: 8px 16px; font-size: 14px;">
+                            Skip
+                        </button>
+                        <button class="btn btn-primary" onclick="approveProspect(${prospect.id})" style="padding: 8px 16px; font-size: 14px;">
+                            Approve
+                        </button>
+                    </div>
                 </div>
             `).join('');
-            
-            card.innerHTML = `
-                <div class="prospect-header">
-                    <div class="company-info">
-                        <h3>${prospect.company_name}</h3>
-                        <div class="company-summary">${prospect.business_summary}</div>
-                        <div class="target-designation">🎯 Target: ${prospect.target_designation}</div>
-                    </div>
-                    <div class="score-badge ${scoreClass}">Score: ${prospect.signal_score}/100</div>
-                </div>
-                
-                <div class="signals-section">
-                    <div class="signals-title">Signals:</div>
-                    ${signalsHtml}
-                </div>
-                
-                <div class="prospect-actions">
-                    <input type="email" class="form-input fallback-email" placeholder="Fallback email" 
-                           value="${state.fallbackEmail}" id="fallback-${prospect.id}">
-                    <button class="btn btn-secondary btn-small" onclick="skipProspect(${prospect.id})">Skip</button>
-                    <button class="btn btn-success btn-small" onclick="approveProspect(${prospect.id})">
-                        ✓ Approve & Send Outreach
-                    </button>
-                </div>
-                
-                <div id="result-${prospect.id}"></div>
-            `;
-            
-            return card;
         }
+        
         // Prospect actions
-        async function approveProspect(prospectId) {
-            const button = event.target;
-            const originalText = button.textContent;
-            button.disabled = true;
-            button.innerHTML = '<span class="spinner"></span> Sending...';
-            
-            // Simulate the complete outreach process
-            setTimeout(() => {
-                const fallbackEmail = document.getElementById(`fallback-${prospectId}`).value;
-                const prospect = state.prospects.find(p => p.id === prospectId);
-                
-                // Mock the complete outreach result
-                const mockResult = {
-                    prospect_id: prospectId,
-                    company: prospect.company_name,
-                    contact: {
-                        name: prospectId === 1 ? "Sarah Chen" : prospectId === 2 ? "Michael Rodriguez" : "Alex Thompson",
-                        email: prospectId === 1 ? "sarah.chen@techcorp.com" : prospectId === 2 ? "m.rodriguez@dataflow.com" : fallbackEmail,
-                        title: prospect.target_designation,
-                        source: prospectId === 3 ? "user_provided" : prospectId === 1 ? "apollo" : "hunter"
-                    },
-                    account_brief: `${prospect.company_name} is experiencing rapid growth with recent funding and expansion activities. Based on our signal analysis, they have ${prospect.high_confidence_count} high-confidence growth indicators including ${prospect.signals[0].type.replace('S1_', '').replace('S2_', '').replace('S3_', '').replace('S4_', '').replace('S5_', '').replace('S6_', '').toLowerCase()} activities.\n\nThis growth phase creates specific cybersecurity training needs as they scale their engineering teams and expand operations. Our cybersecurity training solution directly addresses the compliance and security challenges that emerge during rapid scaling, making this an ideal time for partnership discussions.`,
-                    subject: `Cybersecurity Training for ${prospect.company_name}'s Growth Phase`,
-                    generated_email: `Hi ${prospectId === 1 ? "Sarah" : prospectId === 2 ? "Michael" : "Alex"},\n\nI noticed ${prospect.company_name} ${prospect.signals[0].signal.toLowerCase()}. With your rapid expansion, ensuring your growing engineering team has proper cybersecurity training becomes critical.\n\nWe help Series B companies like ${prospect.company_name} implement comprehensive security training programs that scale with growth. Given your recent ${prospect.signals[1] ? prospect.signals[1].type.includes('HIRING') ? 'hiring activities' : 'expansion' : 'developments'}, this could be valuable timing.\n\nWould you be open to a 15-minute call to discuss how we can support ${prospect.company_name}'s security training needs?\n\nBest regards,\nFireReach Team`,
-                    pdf_generated: true,
-                    status: "sent",
-                    recipient: prospectId === 1 ? "sarah.chen@techcorp.com" : prospectId === 2 ? "m.rodriguez@dataflow.com" : fallbackEmail
-                };
-                
-                renderResult(prospectId, mockResult);
-                button.disabled = false;
-                button.textContent = originalText;
-            }, 3000); // 3 seconds to simulate processing
+        function approveProspect(prospectId) {
+            console.log('Approving prospect:', prospectId);
+            // Update UI to show approved state
         }
-
-        async function skipProspect(prospectId) {
-            const card = document.getElementById(`prospect-${prospectId}`);
-            card.style.opacity = '0.5';
-            card.querySelector('.prospect-actions').innerHTML = '<div style="color: var(--text-muted)">Skipped</div>';
+        
+        function skipProspect(prospectId) {
+            console.log('Skipping prospect:', prospectId);
+            // Update UI to show skipped state
         }
-
-        // Render result
-        function renderResult(prospectId, result) {
-            const container = document.getElementById(`result-${prospectId}`);
-            const isSuccess = result.status === 'sent';
-            
-            const pdfBadge = result.pdf_generated ? '<span class="signal-badge signal-high">📄 PDF Attached</span>' : '';
-            
-            container.innerHTML = `
-                <div class="${isSuccess ? 'result-success' : 'result-error'}">
-                    <div class="result-title">
-                        ${isSuccess ? '✅ SENT' : '❌ FAILED'} 
-                        ${result.recipient ? `To: ${result.recipient} (${result.contact?.source || 'unknown'})` : ''}
-                        ${pdfBadge}
-                    </div>
-                    <div class="result-details">
-                        Subject: ${result.subject || 'N/A'}
-                        ${result.error ? `<br>Error: ${result.error}` : ''}
-                    </div>
-                    
-                    ${result.generated_email ? `
-                        <div class="expandable">
-                            <button class="expand-btn" onclick="toggleExpand('email-${prospectId}')">
-                                ▼ View Email
-                            </button>
-                            <div class="expand-content" id="email-${prospectId}">
-${result.generated_email}
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    ${result.account_brief ? `
-                        <div class="expandable">
-                            <button class="expand-btn" onclick="toggleExpand('brief-${prospectId}')">
-                                ▼ View Account Brief
-                            </button>
-                            <div class="expand-content" id="brief-${prospectId}">
-${result.account_brief}
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
+        
+        // Load history (placeholder)
+        function loadHistory() {
+            console.log('Loading history...');
         }
-
-        function toggleExpand(elementId) {
-            const element = document.getElementById(elementId);
-            const button = event.target;
-            
-            if (element.style.display === 'none' || !element.style.display) {
-                element.style.display = 'block';
-                button.textContent = button.textContent.replace('▼', '▲');
-            } else {
-                element.style.display = 'none';
-                button.textContent = button.textContent.replace('▲', '▼');
-            }
-        }
-        // History functions
-        async function loadHistory() {
-            try {
-                const [historyResponse, sentEmailsResponse] = await Promise.all([
-                    fetch(`${API_URL}/history`),
-                    fetch(`${API_URL}/sent-emails`)
-                ]);
-                
-                const historyData = await historyResponse.json();
-                const sentEmailsData = await sentEmailsResponse.json();
-                
-                const container = document.getElementById('history-container');
-                
-                if (historyData.campaigns.length === 0 && sentEmailsData.sent_emails.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">📭</div>
-                            <p>No campaigns or sent emails yet</p>
-                            <p class="empty-subtitle">Start your first campaign to see results here</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let html = '';
-                
-                // Show sent emails section
-                if (sentEmailsData.sent_emails.length > 0) {
-                    html += `
-                        <div class="history-section">
-                            <h3 style="color: #e6edf3; margin-bottom: 16px; font-size: 18px;">
-                                📧 Sent Emails (${sentEmailsData.total_sent})
-                            </h3>
-                            <div class="sent-emails-grid">
-                    `;
-                    
-                    sentEmailsData.sent_emails.forEach(email => {
-                        const sentDate = new Date(email.sent_at).toLocaleDateString();
-                        const emailPreview = email.generated_email.substring(0, 100) + '...';
-                        
-                        html += `
-                            <div class="sent-email-card">
-                                <div class="email-header">
-                                    <div class="email-recipient">
-                                        <strong>${email.contact_name || 'Unknown'}</strong>
-                                        <span class="email-address">${email.contact_email}</span>
-                                    </div>
-                                    <div class="email-date">${sentDate}</div>
-                                </div>
-                                <div class="email-company">${email.company_name}</div>
-                                <div class="email-subject">
-                                    <strong>Subject:</strong> ${email.email_subject}
-                                </div>
-                                <div class="email-preview">${emailPreview}</div>
-                                ${email.pdf_path ? '<div class="email-attachment">📎 PDF Attached</div>' : ''}
-                                <div class="email-status">✅ Delivered</div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                // Show campaign history
-                if (historyData.campaigns.length > 0) {
-                    html += `
-                        <div class="history-section">
-                            <h3 style="color: #e6edf3; margin-bottom: 16px; font-size: 18px;">
-                                📊 Campaign History (${historyData.total})
-                            </h3>
-                            <div class="campaigns-grid">
-                    `;
-                    
-                    historyData.campaigns.forEach(campaign => {
-                        const date = new Date(campaign.created_at).toLocaleDateString();
-                        const statusColor = campaign.status === 'completed' ? '#28a745' : 
-                                          campaign.status === 'failed' ? '#dc3545' : '#ffc107';
-                        
-                        html += `
-                            <div class="campaign-card">
-                                <div class="campaign-header">
-                                    <div class="campaign-id">Campaign #${campaign.id}</div>
-                                    <div class="campaign-date">${date}</div>
-                                </div>
-                                <div class="campaign-icp">${campaign.icp}</div>
-                                <div class="campaign-stats">
-                                    <span>Found: ${campaign.companies_found || 0}</span>
-                                    <span>Sent: ${campaign.sent_count || 0}</span>
-                                    <span>Plan: ${campaign.plan_tier}</span>
-                                </div>
-                                <div class="campaign-status" style="color: ${statusColor}">
-                                    ${campaign.status.toUpperCase()}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                container.innerHTML = html;
-                
-            } catch (error) {
-                document.getElementById('history-container').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">❌</div>
-                        <p>Error loading history: ${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        function renderCampaignCard(campaign) {
-            const card = document.createElement('div');
-            card.className = 'campaign-card';
-            card.onclick = () => loadCampaignDetails(campaign.id);
-            
-            const createdAt = new Date(campaign.created_at).toLocaleDateString();
-            const timeAgo = getTimeAgo(new Date(campaign.created_at));
-            
-            card.innerHTML = `
-                <div class="campaign-header">
-                    <div>
-                        <div class="campaign-title">Campaign #${campaign.id}</div>
-                        <div class="campaign-meta">${campaign.plan_tier.toUpperCase()} Plan • ${timeAgo}</div>
-                    </div>
-                </div>
-                <div class="campaign-icp">${campaign.icp}</div>
-                <div class="campaign-stats">
-                    <span class="stat">${campaign.total_prospects || 0} found</span>
-                    <span class="stat">${campaign.companies_approved || 0} approved</span>
-                    <span class="stat">${campaign.sent_count || 0} sent</span>
-                </div>
-            `;
-            
-            return card;
-        }
-
-        async function loadCampaignDetails(campaignId) {
-            try {
-                const response = await fetch(`${API_URL}/campaign/${campaignId}`);
-                const data = await response.json();
-                
-                // Switch to approval screen and show campaign details
-                state.currentCampaignId = campaignId;
-                state.prospects = data.prospects;
-                state.currentIcp = data.campaign.icp;
-                
-                renderApprovalDashboard({
-                    campaign_id: campaignId,
-                    prospects: data.prospects
-                });
-                
-                showScreen('approval');
-                
-            } catch (error) {
-                alert('Error loading campaign: ' + error.message);
-            }
-        }
-
-        function getTimeAgo(date) {
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 60) return `${diffMins}m ago`;
-            if (diffHours < 24) return `${diffHours}h ago`;
-            return `${diffDays}d ago`;
-        }
-
+        
         // Initialize app
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set default values
-            document.getElementById('icp-input').value = 'We sell high-end cybersecurity training to Series B startups that are scaling their engineering teams';
-            document.getElementById('fallback-email').value = 'cto@company.com';
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('dashboard');
         });
     </script>
 </body>
