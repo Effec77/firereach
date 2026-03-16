@@ -37,7 +37,7 @@ class ApprovalRequest(BaseModel):
 
 @app.get("/")
 def health_check():
-    return {"status": "FireReach API running"}
+    return {"status": "FireReach API running", "version": "v2.0-rebuild"}
 
 @app.post("/discover")
 def discover_endpoint(request: DiscoverRequest):

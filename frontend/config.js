@@ -1,1 +1,1 @@
-const API_URL = 'http://localhost:8000';
+const API_URL = 'https://firereach-m46a.onrender.com';
