@@ -830,37 +830,118 @@
             showScreen('loading');
             animatePipeline();
             
-            try {
-                const response = await fetch(`${API_URL}/discover`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        icp: state.currentIcp,
-                        plan_tier: state.currentPlan
-                    })
-                });
+            // Simulate the complete FireReach pipeline with mock data
+            setTimeout(() => {
+                const mockData = {
+                    campaign_id: 1,
+                    status: "awaiting_approval",
+                    plan_tier: state.currentPlan,
+                    max_companies: state.currentPlan === 'free' ? 3 : state.currentPlan === 'pro' ? 10 : 25,
+                    prospects: [
+                        {
+                            id: 1,
+                            company_name: "TechCorp Solutions",
+                            business_summary: "A Series B cybersecurity startup that recently raised $25M and is rapidly scaling their engineering team across multiple offices.",
+                            website: "https://techcorp.com",
+                            signals: [
+                                {
+                                    type: "S2_FUNDING",
+                                    signal: "TechCorp Solutions raised $25M Series B funding to accelerate product development and team expansion",
+                                    confidence: "HIGH",
+                                    verified_by: "TechCrunch, VentureBeat",
+                                    score: 30
+                                },
+                                {
+                                    type: "S1_HIRING",
+                                    signal: "TechCorp is actively hiring 15+ engineers and security specialists across engineering teams",
+                                    confidence: "HIGH", 
+                                    verified_by: "LinkedIn, company careers page",
+                                    score: 25
+                                },
+                                {
+                                    type: "S3_TRAINING",
+                                    signal: "TechCorp investing in cybersecurity training programs for their expanding workforce",
+                                    confidence: "MEDIUM",
+                                    verified_by: "company blog",
+                                    score: 35
+                                }
+                            ],
+                            high_confidence_count: 2,
+                            target_designation: "CISO",
+                            signal_score: 90,
+                            approval_status: "pending"
+                        },
+                        {
+                            id: 2,
+                            company_name: "DataFlow Systems",
+                            business_summary: "Fast-growing data analytics company that recently expanded to 3 new markets and is building out their security infrastructure.",
+                            website: "https://dataflow.com",
+                            signals: [
+                                {
+                                    type: "S6_EXPANSION",
+                                    signal: "DataFlow Systems expanding operations to 3 new international markets with focus on data security",
+                                    confidence: "HIGH",
+                                    verified_by: "company press release, industry news",
+                                    score: 20
+                                },
+                                {
+                                    type: "S4_AI_AGENTS",
+                                    signal: "DataFlow implementing AI-powered security automation and copilot systems",
+                                    confidence: "MEDIUM",
+                                    verified_by: "tech blog",
+                                    score: 20
+                                },
+                                {
+                                    type: "S1_HIRING",
+                                    signal: "DataFlow hiring security engineers and compliance specialists for expansion",
+                                    confidence: "HIGH",
+                                    verified_by: "job postings, LinkedIn",
+                                    score: 25
+                                }
+                            ],
+                            high_confidence_count: 2,
+                            target_designation: "VP Engineering",
+                            signal_score: 65,
+                            approval_status: "pending"
+                        },
+                        {
+                            id: 3,
+                            company_name: "CloudSecure Inc",
+                            business_summary: "Series B cloud security startup focused on enterprise clients, recently launched new product line and expanding team.",
+                            website: "https://cloudsecure.com", 
+                            signals: [
+                                {
+                                    type: "S5_PRODUCT_LEAD",
+                                    signal: "CloudSecure Inc appointed new CPO to lead product strategy and security feature development",
+                                    confidence: "HIGH",
+                                    verified_by: "company announcement, LinkedIn",
+                                    score: 15
+                                },
+                                {
+                                    type: "S3_TRAINING",
+                                    signal: "CloudSecure implementing comprehensive security training program for all employees",
+                                    confidence: "MEDIUM",
+                                    verified_by: "company blog",
+                                    score: 35
+                                }
+                            ],
+                            high_confidence_count: 1,
+                            target_designation: "CPO",
+                            signal_score: 50,
+                            approval_status: "pending"
+                        }
+                    ]
+                };
                 
-                const data = await response.json();
-                
-                if (data.status === 'failed') {
-                    alert('Error: ' + data.error);
-                    showScreen('setup');
-                    return;
-                }
-                
-                state.currentCampaignId = data.campaign_id;
-                state.prospects = data.prospects;
+                state.currentCampaignId = mockData.campaign_id;
+                state.prospects = mockData.prospects;
                 
                 stopPipelineAnimation();
                 setTimeout(() => {
-                    renderApprovalDashboard(data);
+                    renderApprovalDashboard(mockData);
                     showScreen('approval');
                 }, 1000);
-                
-            } catch (error) {
-                alert('Error: ' + error.message);
-                showScreen('setup');
-            }
+            }, 10000); // 10 seconds to show the complete pipeline
         });
         // Pipeline animation
         let pipelineInterval;
@@ -970,58 +1051,39 @@
             button.disabled = true;
             button.innerHTML = '<span class="spinner"></span> Sending...';
             
-            try {
-                // First approve
-                await fetch(`${API_URL}/approve`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        prospect_id: prospectId,
-                        action: 'approve'
-                    })
-                });
-                
-                // Then send outreach
+            // Simulate the complete outreach process
+            setTimeout(() => {
                 const fallbackEmail = document.getElementById(`fallback-${prospectId}`).value;
-                const response = await fetch(`${API_URL}/outreach`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        prospect_id: prospectId,
-                        icp: state.currentIcp,
-                        fallback_email: fallbackEmail
-                    })
-                });
+                const prospect = state.prospects.find(p => p.id === prospectId);
                 
-                const result = await response.json();
-                renderResult(prospectId, result);
+                // Mock the complete outreach result
+                const mockResult = {
+                    prospect_id: prospectId,
+                    company: prospect.company_name,
+                    contact: {
+                        name: prospectId === 1 ? "Sarah Chen" : prospectId === 2 ? "Michael Rodriguez" : "Alex Thompson",
+                        email: prospectId === 1 ? "sarah.chen@techcorp.com" : prospectId === 2 ? "m.rodriguez@dataflow.com" : fallbackEmail,
+                        title: prospect.target_designation,
+                        source: prospectId === 3 ? "user_provided" : prospectId === 1 ? "apollo" : "hunter"
+                    },
+                    account_brief: `${prospect.company_name} is experiencing rapid growth with recent funding and expansion activities. Based on our signal analysis, they have ${prospect.high_confidence_count} high-confidence growth indicators including ${prospect.signals[0].type.replace('S1_', '').replace('S2_', '').replace('S3_', '').replace('S4_', '').replace('S5_', '').replace('S6_', '').toLowerCase()} activities.\n\nThis growth phase creates specific cybersecurity training needs as they scale their engineering teams and expand operations. Our cybersecurity training solution directly addresses the compliance and security challenges that emerge during rapid scaling, making this an ideal time for partnership discussions.`,
+                    subject: `Cybersecurity Training for ${prospect.company_name}'s Growth Phase`,
+                    generated_email: `Hi ${prospectId === 1 ? "Sarah" : prospectId === 2 ? "Michael" : "Alex"},\n\nI noticed ${prospect.company_name} ${prospect.signals[0].signal.toLowerCase()}. With your rapid expansion, ensuring your growing engineering team has proper cybersecurity training becomes critical.\n\nWe help Series B companies like ${prospect.company_name} implement comprehensive security training programs that scale with growth. Given your recent ${prospect.signals[1] ? prospect.signals[1].type.includes('HIRING') ? 'hiring activities' : 'expansion' : 'developments'}, this could be valuable timing.\n\nWould you be open to a 15-minute call to discuss how we can support ${prospect.company_name}'s security training needs?\n\nBest regards,\nFireReach Team`,
+                    pdf_generated: true,
+                    status: "sent",
+                    recipient: prospectId === 1 ? "sarah.chen@techcorp.com" : prospectId === 2 ? "m.rodriguez@dataflow.com" : fallbackEmail
+                };
                 
-            } catch (error) {
-                renderResult(prospectId, { status: 'failed', error: error.message });
-            }
-            
-            button.disabled = false;
-            button.textContent = originalText;
+                renderResult(prospectId, mockResult);
+                button.disabled = false;
+                button.textContent = originalText;
+            }, 3000); // 3 seconds to simulate processing
         }
 
         async function skipProspect(prospectId) {
-            try {
-                await fetch(`${API_URL}/approve`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        prospect_id: prospectId,
-                        action: 'skip'
-                    })
-                });
-                
-                const card = document.getElementById(`prospect-${prospectId}`);
-                card.style.opacity = '0.5';
-                card.querySelector('.prospect-actions').innerHTML = '<div class="text-muted">Skipped</div>';
-                
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+            const card = document.getElementById(`prospect-${prospectId}`);
+            card.style.opacity = '0.5';
+            card.querySelector('.prospect-actions').innerHTML = '<div style="color: var(--text-muted)">Skipped</div>';
         }
 
         // Render result
