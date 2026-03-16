@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireReach - AI-Powered Outreach Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #161616;
+            --border: #2a2a2a;
+            --border-light: #333333;
+            --primary: #ff6b35;
+            --primary-hover: #e55a25;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --sidebar-width: 240px;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .nav-section {
+            padding: 20px 0;
+        }
+        
+        .nav-title {
+            padding: 0 20px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+            border-right: 2px solid var(--primary);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .user-profile:hover {
+            background: var(--bg-card);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+        
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .breadcrumb-item {
+            color: var(--text-muted);
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        /* Page Content */
+        .page-content {
+            padding: 32px;
+        }
+        
+        .page-header {
+            margin-bottom: 32px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .metric-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .metric-icon.primary { background: rgba(255, 107, 53, 0.1); color: var(--primary); }
+        .metric-icon.success { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+        .metric-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .metric-icon.error { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .metric-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .metric-change.positive { color: var(--success); }
+        .metric-change.negative { color: var(--error); }
+        .metric-change.neutral { color: var(--text-secondary); }
+        
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: var(--bg-tertiary);
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        
+        .table tr:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-badge.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+        
+        .status-badge.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+        
+        .status-badge.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        /* Progress Bars */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Utilities */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-0 { margin-bottom: 0 !important; }
+        .mb-16 { margin-bottom: 16px !important; }
+        .mb-24 { margin-bottom: 24px !important; }
+        .mt-16 { margin-top: 16px !important; }
+        .mt-24 { margin-top: 24px !important; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">🔥</div>
+                FireReach
+            </div>
+        </div>
+        
+        <nav class="nav-section">
+            <div class="nav-title">Main</div>
+            <button class="nav-item active" onclick="showPage('dashboard')">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </button>
+            <button class="nav-item" onclick="showPage('new-campaign')">
+                <i class="fas fa-plus"></i>
+                New Campaign
+            </button>
+            <button class="nav-item" onclick="showPage('prospects')">
+                <i class="fas fa-users"></i>
+                Prospects
+                <span class="nav-badge" id="prospects-count">12</span>
+            </button>
+            <button class="nav-item" onclick="showPage('sent-emails')">
+                <i class="fas fa-envelope"></i>
+                Sent Emails
+            </button>
+            <button class="nav-item" onclick="showPage('history')">
+                <i class="fas fa-history"></i>
+                History
+            </button>
+        </nav>
+        
+        <nav class="nav-section">
+            <div class="nav-title">System</div>
+            <button class="nav-item" onclick="showPage('settings')">
+                <i class="fas fa-cog"></i>
+                Settings
+            </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-info">
+                    <div class="user-name">John Doe</div>
+                    <div class="user-email">john@company.com</div>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="breadcrumb">
+                <span class="breadcrumb-item">FireReach</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-item active" id="current-page">Dashboard</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-ghost" onclick="loadHistory()">
+                    <i class="fas fa-history"></i>
+                    View History
+                </button>
+                <button class="btn btn-primary" onclick="showPage('new-campaign')">
+                    <i class="fas fa-plus"></i>
+                    New Campaign
+                </button>
+            </div>
+        </header>
+        
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page-content">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Monitor your outreach campaigns and prospect engagement</p>
+            </div>
+            
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Total Campaigns</div>
+                        <div class="metric-icon primary">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="total-campaigns">12</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +2.5% from last month
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Companies Discovered</div>
+                        <div class="metric-icon success">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="companies-discovered">148</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +8.2% from last month
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Prospects Found</div>
+                        <div class="metric-icon warning">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="prospects-found">89</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +10.3% awaiting approval
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Emails Sent</div>
+                        <div class="metric-icon error">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="emails-sent">234</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        +4% 25% open rate
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Grid -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Campaign Performance</h3>
+                            <p class="card-subtitle">Weekly email activity and engagement</p>
+                        </div>
+                    </div>
+                    <div id="performance-chart" style="height: 300px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        <i class="fas fa-chart-line" style="font-size: 48px; margin-right: 16px;"></i>
+                        Performance Chart Placeholder
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Pipeline Status</h3>
+                            <p class="card-subtitle">Current campaign progress</p>
+                        </div>
+                    </div>
+                    <div class="pipeline-status">
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge success">
+                                <div class="status-dot"></div>
+                                Done
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">ICP Analysis</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge success">
+                                <div class="status-dot"></div>
+                                Done
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Company Discovery</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge success">
+                                <div class="status-dot"></div>
+                                Done
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Signal Harvesting</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge warning">
+                                <div class="status-dot"></div>
+                                In Progress
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Contact Discovery</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div class="status-badge info">
+                                <div class="status-dot"></div>
+                                Pending
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Email Generation</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step" style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                            <div class="status-badge info">
+                                <div class="status-dot"></div>
+                                Pending
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">PDF + Sending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Grid -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Signals by Type</h3>
+                        <p class="card-subtitle">Distribution of discovered signals</p>
+                    </div>
+                    <div class="signals-chart">
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Hiring</span>
+                                <span style="font-size: 14px; font-weight: 500;">35%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Funding</span>
+                                <span style="font-size: 14px; font-weight: 500;">28%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Training</span>
+                                <span style="font-size: 14px; font-weight: 500;">22%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 55%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">AI/ML</span>
+                                <span style="font-size: 14px; font-weight: 500;">18%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Compliance</span>
+                                <span style="font-size: 14px; font-weight: 500;">15%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 38%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 14px; color: var(--text-secondary);">Expansion</span>
+                                <span style="font-size: 14px; font-weight: 500;">12%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">Recent Prospects</h3>
+                            <p class="card-subtitle">Latest discovered prospects</p>
+                        </div>
+                        <button class="btn btn-ghost" onclick="showPage('prospects')">
+                            View all
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="recent-prospects">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">SJ</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 2px;">Sarah Johnson</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">CISO at TechCorp Solutions</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">sarah@techcorp.com • +1 (555) 123-4567</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge success" style="margin-bottom: 4px;">Approved</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Score 92</div>
+                                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                    <span style="background: var(--primary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Funding</span>
+                                    <span style="background: var(--success); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Hiring</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                            <div style="width: 40px; height: 40px; background: var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">MC</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 2px;">Michael Chen</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">VP Engineering at DataFlow Systems</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">michael@dataflow.com</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge warning" style="margin-bottom: 4px;">Pending</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Score 85</div>
+                                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                    <span style="background: var(--success); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Training</span>
+                                    <span style="background: var(--info); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Compliance</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                            <div style="width: 40px; height: 40px; background: var(--error); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">ER</div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 2px;">Emily Rodriguez</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">CTO at CloudScale Inc</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">emily@cloudscale.com • +1 (555) 987-6543</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge error" style="margin-bottom: 4px;">Contacted</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Score 78</div>
+                                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                    <span style="background: var(--warning); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">AI/ML</span>
+                                    <span style="background: var(--primary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px;">Expansion</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Campaign Page -->
+        <div id="new-campaign-page" class="page-content hidden">
+            <div class="page-header">
+                <h1 class="page-title">New Campaign</h1>
+                <p class="page-subtitle">Create a new outreach campaign with AI-powered prospect discovery</p>
+            </div>
+            
+            <div style="max-width: 800px;">
+                <div class="card">
+                    <form id="campaign-form">
+                        <div class="form-group">
+                            <label class="form-label">Ideal Customer Profile (ICP) *</label>
+                            <textarea 
+                                id="icp-input" 
+                                class="form-textarea" 
+                                placeholder="Describe who you want to target. Be as specific as possible about industry, company size, pain points, etc.&#10;&#10;Example: We sell cybersecurity training to Series B startups in the fintech space. Our ideal customers are companies with 50-200 employees who have recently raised funding and are expanding their engineering teams..."
+                                required
+                                rows="6"
+                            ></textarea>
+                            <div class="form-hint">Be specific about industry, company size, recent events, and pain points for better targeting</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Fallback Email *</label>
+                            <input 
+                                type="email" 
+                                id="fallback-email" 
+                                class="form-input" 
+                                placeholder="cto@company.com"
+                                required
+                            >
+                            <div class="form-hint">Used when contact email cannot be found via Apollo/Hunter</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Select Your Plan</label>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
+                                <div class="plan-card" data-plan="free" style="border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: var(--bg-tertiary);">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Free</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">3</div>
+                                        <div style="font-size: 14px; color: var(--text-secondary);">companies</div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">Perfect for testing</div>
+                                    </div>
+                                </div>
+                                <div class="plan-card selected" data-plan="pro" style="border: 2px solid var(--primary); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: rgba(255, 107, 53, 0.1);">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Pro</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">10</div>
+                                        <div style="font-size: 14px; color: var(--text-secondary);">companies</div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">For growing teams</div>
+                                        <div style="position: absolute; top: -8px; right: -8px; background: var(--primary); color: white; font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: 600;">Popular</div>
+                                    </div>
+                                </div>
+                                <div class="plan-card" data-plan="plus" style="border: 2px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; background: var(--bg-tertiary);">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Plus</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">25</div>
+                                        <div style="font-size: 14px; color: var(--text-secondary);">companies</div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">For power users</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">What happens next?</label>
+                            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 20px; margin-top: 8px;">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">1</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">🔍 ICP Analysis</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">2</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">🏢 Company Discovery</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">3</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">📡 Contact Discovery</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">4</div>
+                                    <span style="font-size: 14px; color: var(--text-secondary);">📧 Email Generation</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 16px;">
+                            <i class="fas fa-rocket"></i>
+                            Discover Companies
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Page -->
+        <div id="loading-page" class="page-content hidden">
+            <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <div class="card">
+                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 32px;">Analyzing your ICP...</h2>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div class="pipeline-step active" id="step-1" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--primary); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; color: white;">1</div>
+                            <div style="font-weight: 500;">🔍 Discovering matching companies</div>
+                        </div>
+                        <div class="pipeline-step" id="step-2" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-weight: 600;">2</div>
+                            <div style="font-weight: 500;">📡 Harvesting live signals (S1-S6)</div>
+                        </div>
+                        <div class="pipeline-step" id="step-3" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-weight: 600;">3</div>
+                            <div style="font-weight: 500;">✅ Verifying signals (2-source check)</div>
+                        </div>
+                        <div class="pipeline-step" id="step-4" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-tertiary); border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-weight: 600;">4</div>
+                            <div style="font-weight: 500;">🎯 Scoring + mapping designations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prospects Page -->
+        <div id="prospects-page" class="page-content hidden">
+            <div class="page-header">
+                <h1 class="page-title">Prospects</h1>
+                <p class="page-subtitle">Review and approve discovered prospects for outreach</p>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 32px;">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Total Prospects</div>
+                    </div>
+                    <div class="metric-value">4</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Approved</div>
+                    </div>
+                    <div class="metric-value" style="color: var(--success);">2</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Skipped</div>
+                    </div>
+                    <div class="metric-value" style="color: var(--text-muted);">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Pending Review</div>
+                    </div>
+                    <div class="metric-value" style="color: var(--warning);">2</div>
+                </div>
+            </div>
+            
+            <!-- Search and Filter -->
+            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+                <div style="flex: 1;">
+                    <input type="text" class="form-input" placeholder="Search companies..." style="margin: 0;">
+                </div>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-filter"></i>
+                    All Signals
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-envelope"></i>
+                    Send Emails (2)
+                </button>
+            </div>
+            
+            <!-- Prospects Grid -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;" id="prospects-grid">
+                <!-- Prospect cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Other pages (Sent Emails, History, Settings) would go here -->
+        <!-- For brevity, I'll add the JavaScript functionality -->
+    </div>
+    
+    <script>
+        // API Configuration
+        const API_URL = 'https://firereach-m46a.onrender.com';
+        
+        // State management
+        let state = {
+            currentPage: 'dashboard',
+            currentCampaignId: null,
+            currentIcp: '',
+            currentPlan: 'pro',
+            fallbackEmail: '',
+            prospects: []
+        };
+        
+        // Page navigation
+        function showPage(pageName) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showPage('${pageName}')"]`).classList.add('active');
+            
+            // Update breadcrumb
+            document.getElementById('current-page').textContent = 
+                pageName.charAt(0).toUpperCase() + pageName.slice(1).replace('-', ' ');
+            
+            // Hide all pages
+            document.querySelectorAll('[id$="-page"]').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show target page
+            document.getElementById(pageName + '-page').classList.remove('hidden');
+            
+            state.currentPage = pageName;
+            
+            // Load page-specific data
+            if (pageName === 'prospects') {
+                loadProspects();
+            } else if (pageName === 'history') {
+                loadHistory();
+            }
+        }
+        
+        // Plan selector
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.plan-card').forEach(c => {
+                        c.classList.remove('selected');
+                        c.style.border = '2px solid var(--border)';
+                        c.style.background = 'var(--bg-tertiary)';
+                    });
+                    card.classList.add('selected');
+                    card.style.border = '2px solid var(--primary)';
+                    card.style.background = 'rgba(255, 107, 53, 0.1)';
+                    state.currentPlan = card.dataset.plan;
+                });
+            });
+            
+            // Form submission
+            document.getElementById('campaign-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                state.currentIcp = document.getElementById('icp-input').value;
+                state.fallbackEmail = document.getElementById('fallback-email').value;
+                
+                showPage('loading');
+                animatePipeline();
+                
+                // Simulate the complete FireReach pipeline with mock data
+                setTimeout(() => {
+                    const mockData = {
+                        campaign_id: 1,
+                        status: "awaiting_approval",
+                        plan_tier: state.currentPlan,
+                        max_companies: state.currentPlan === 'free' ? 3 : state.currentPlan === 'pro' ? 10 : 25,
+                        prospects: [
+                            {
+                                id: 1,
+                                company_name: "TechCorp Solutions",
+                                business_summary: "A Series B cybersecurity startup that recently raised $25M and is rapidly scaling their engineering team across multiple offices.",
+                                website: "https://techcorp.com",
+                                signals: [
+                                    {
+                                        type: "S2_FUNDING",
+                                        signal: "TechCorp Solutions raised $25M Series B funding to accelerate product development and team expansion",
+                                        confidence: "HIGH",
+                                        verified_by: "TechCrunch, VentureBeat",
+                                        score: 30
+                                    },
+                                    {
+                                        type: "S1_HIRING",
+                                        signal: "TechCorp is actively hiring 15+ engineers and security specialists across engineering teams",
+                                        confidence: "HIGH", 
+                                        verified_by: "LinkedIn, company careers page",
+                                        score: 25
+                                    }
+                                ],
+                                high_confidence_count: 2,
+                                target_designation: "CISO",
+                                signal_score: 90,
+                                approval_status: "pending"
+                            },
+                            {
+                                id: 2,
+                                company_name: "DataFlow Systems",
+                                business_summary: "Fast-growing data analytics company that recently expanded to 3 new markets and is building out their security infrastructure.",
+                                website: "https://dataflow.com",
+                                signals: [
+                                    {
+                                        type: "S6_EXPANSION",
+                                        signal: "DataFlow Systems expanding operations to 3 new international markets with focus on data security",
+                                        confidence: "HIGH",
+                                        verified_by: "company press release, industry news",
+                                        score: 20
+                                    }
+                                ],
+                                high_confidence_count: 1,
+                                target_designation: "VP Engineering",
+                                signal_score: 75,
+                                approval_status: "pending"
+                            }
+                        ]
+                    };
+                    
+                    state.prospects = mockData.prospects;
+                    state.currentCampaignId = mockData.campaign_id;
+                    showPage('prospects');
+                }, 5000);
+            });
+        });
+        
+        // Pipeline animation
+        function animatePipeline() {
+            const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                if (currentStep > 0) {
+                    const prevStep = document.getElementById(steps[currentStep - 1]);
+                    prevStep.classList.remove('active');
+                    prevStep.style.border = '2px solid var(--success)';
+                    prevStep.querySelector('div').style.background = 'var(--success)';
+                    prevStep.querySelector('div').style.color = 'white';
+                }
+                
+                if (currentStep < steps.length) {
+                    const step = document.getElementById(steps[currentStep]);
+                    step.classList.add('active');
+                    step.style.border = '2px solid var(--primary)';
+                    step.querySelector('div').style.background = 'var(--primary)';
+                    step.querySelector('div').style.color = 'white';
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1200);
+        }
+        
+        // Load prospects
+        function loadProspects() {
+            const grid = document.getElementById('prospects-grid');
+            if (!state.prospects.length) return;
+            
+            grid.innerHTML = state.prospects.map(prospect => `
+                <div class="card" style="position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">${prospect.company_name}</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 8px;">${prospect.business_summary}</p>
+                            <p style="color: var(--info); font-size: 14px;">Target: ${prospect.target_designation}</p>
+                        </div>
+                        <div class="status-badge ${prospect.signal_score >= 85 ? 'success' : prospect.signal_score >= 70 ? 'warning' : 'error'}" style="font-size: 14px; padding: 6px 12px;">
+                            Score ${prospect.signal_score}
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 16px 0; padding-top: 16px; border-top: 1px solid var(--border);">
+                        <h4 style="font-weight: 600; margin-bottom: 12px; font-size: 14px;">Signals (${prospect.high_confidence_count} high confidence)</h4>
+                        ${prospect.signals.map(signal => `
+                            <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+                                <div class="status-badge ${signal.confidence === 'HIGH' ? 'success' : 'warning'}" style="font-size: 11px; padding: 2px 6px;">
+                                    ${signal.confidence}
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; color: var(--text-secondary);">${signal.signal}</div>
+                                    <div style="font-size: 12px; color: var(--accent-cyan); margin-top: 2px;">✓ ${signal.verified_by}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                        <input type="email" class="form-input" placeholder="fallback@company.com" style="flex: 1; margin: 0; font-size: 14px; padding: 8px 12px;">
+                        <button class="btn btn-secondary" onclick="skipProspect(${prospect.id})" style="padding: 8px 16px; font-size: 14px;">
+                            Skip
+                        </button>
+                        <button class="btn btn-primary" onclick="approveProspect(${prospect.id})" style="padding: 8px 16px; font-size: 14px;">
+                            Approve
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Prospect actions
+        function approveProspect(prospectId) {
+            console.log('Approving prospect:', prospectId);
+            // Update UI to show approved state
+        }
+        
+        function skipProspect(prospectId) {
+            console.log('Skipping prospect:', prospectId);
+            // Update UI to show skipped state
+        }
+        
+        // Load history (placeholder)
+        function loadHistory() {
+            console.log('Loading history...');
+        }
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('dashboard');
+        });
+    </script>
+</body>
+</html>

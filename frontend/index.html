@@ -1180,25 +1180,110 @@ ${result.account_brief}
         // History functions
         async function loadHistory() {
             try {
-                const response = await fetch(`${API_URL}/history`);
-                const data = await response.json();
+                const [historyResponse, sentEmailsResponse] = await Promise.all([
+                    fetch(`${API_URL}/history`),
+                    fetch(`${API_URL}/sent-emails`)
+                ]);
+                
+                const historyData = await historyResponse.json();
+                const sentEmailsData = await sentEmailsResponse.json();
                 
                 const container = document.getElementById('history-container');
                 
-                if (data.campaigns.length === 0) {
+                if (historyData.campaigns.length === 0 && sentEmailsData.sent_emails.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon">📭</div>
-                            <p>No campaigns yet. Launch your first campaign to get started.</p>
+                            <p>No campaigns or sent emails yet</p>
+                            <p class="empty-subtitle">Start your first campaign to see results here</p>
                         </div>
                     `;
                     return;
                 }
                 
-                container.innerHTML = '';
-                data.campaigns.forEach(campaign => {
-                    container.appendChild(renderCampaignCard(campaign));
-                });
+                let html = '';
+                
+                // Show sent emails section
+                if (sentEmailsData.sent_emails.length > 0) {
+                    html += `
+                        <div class="history-section">
+                            <h3 style="color: #e6edf3; margin-bottom: 16px; font-size: 18px;">
+                                📧 Sent Emails (${sentEmailsData.total_sent})
+                            </h3>
+                            <div class="sent-emails-grid">
+                    `;
+                    
+                    sentEmailsData.sent_emails.forEach(email => {
+                        const sentDate = new Date(email.sent_at).toLocaleDateString();
+                        const emailPreview = email.generated_email.substring(0, 100) + '...';
+                        
+                        html += `
+                            <div class="sent-email-card">
+                                <div class="email-header">
+                                    <div class="email-recipient">
+                                        <strong>${email.contact_name || 'Unknown'}</strong>
+                                        <span class="email-address">${email.contact_email}</span>
+                                    </div>
+                                    <div class="email-date">${sentDate}</div>
+                                </div>
+                                <div class="email-company">${email.company_name}</div>
+                                <div class="email-subject">
+                                    <strong>Subject:</strong> ${email.email_subject}
+                                </div>
+                                <div class="email-preview">${emailPreview}</div>
+                                ${email.pdf_path ? '<div class="email-attachment">📎 PDF Attached</div>' : ''}
+                                <div class="email-status">✅ Delivered</div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Show campaign history
+                if (historyData.campaigns.length > 0) {
+                    html += `
+                        <div class="history-section">
+                            <h3 style="color: #e6edf3; margin-bottom: 16px; font-size: 18px;">
+                                📊 Campaign History (${historyData.total})
+                            </h3>
+                            <div class="campaigns-grid">
+                    `;
+                    
+                    historyData.campaigns.forEach(campaign => {
+                        const date = new Date(campaign.created_at).toLocaleDateString();
+                        const statusColor = campaign.status === 'completed' ? '#28a745' : 
+                                          campaign.status === 'failed' ? '#dc3545' : '#ffc107';
+                        
+                        html += `
+                            <div class="campaign-card">
+                                <div class="campaign-header">
+                                    <div class="campaign-id">Campaign #${campaign.id}</div>
+                                    <div class="campaign-date">${date}</div>
+                                </div>
+                                <div class="campaign-icp">${campaign.icp}</div>
+                                <div class="campaign-stats">
+                                    <span>Found: ${campaign.companies_found || 0}</span>
+                                    <span>Sent: ${campaign.sent_count || 0}</span>
+                                    <span>Plan: ${campaign.plan_tier}</span>
+                                </div>
+                                <div class="campaign-status" style="color: ${statusColor}">
+                                    ${campaign.status.toUpperCase()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
                 
             } catch (error) {
                 document.getElementById('history-container').innerHTML = `

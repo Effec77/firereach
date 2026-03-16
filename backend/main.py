@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from dotenv import load_dotenv
+from agent import run_discovery, run_outreach_for_prospect
+from database import (
+    get_recent_campaigns, get_campaign_prospects, 
+    get_campaign, update_prospect, get_prospect
+)
 
 load_dotenv()
 
@@ -35,75 +40,102 @@ def health_check():
 
 @app.post("/discover")
 def discover_endpoint(request: DiscoverRequest):
-    # Temporary mock response for testing
-    return {
-        "campaign_id": 1,
-        "status": "awaiting_approval",
-        "plan_tier": request.plan_tier,
-        "max_companies": 3,
-        "prospects": [
-            {
-                "id": 1,
-                "company_name": "Example Corp",
-                "business_summary": "A leading technology company",
-                "website": "https://example.com",
-                "signals": [
-                    {
-                        "type": "S2_FUNDING",
-                        "signal": "Example Corp recently raised $50M in Series B funding",
-                        "confidence": "HIGH",
-                        "verified_by": "second_source",
-                        "score": 30
-                    }
-                ],
-                "high_confidence_count": 1,
-                "target_designation": "CEO",
-                "signal_score": 75,
-                "approval_status": "pending"
-            }
-        ]
-    }
+    try:
+        result = run_discovery(request.icp, request.plan_tier)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/approve")
 def approve_endpoint(request: ApprovalRequest):
-    status = "approved" if request.action == "approve" else "skipped"
-    return {"prospect_id": request.prospect_id, "status": status}
+    try:
+        prospect = get_prospect(request.prospect_id)
+        if not prospect:
+            raise HTTPException(status_code=404, detail="Prospect not found")
+        
+        status = "approved" if request.action == "approve" else "skipped"
+        update_prospect(request.prospect_id, {"approval_status": status})
+        
+        return {"prospect_id": request.prospect_id, "status": status}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/outreach")
 def outreach_endpoint(request: OutreachRequest):
-    # Temporary mock response
-    return {
-        "prospect_id": request.prospect_id,
-        "company": "Example Corp",
-        "contact": {
-            "name": "John Doe",
-            "email": request.fallback_email,
-            "title": "CEO",
-            "source": "user_provided"
-        },
-        "account_brief": "Example Corp is in a growth phase with recent funding.",
-        "subject": "Partnership Opportunity",
-        "generated_email": "Hi John,\n\nI noticed Example Corp recently raised funding. We help companies like yours with cybersecurity training.\n\nWould you be open to a 15-minute call?\n\nBest regards",
-        "pdf_generated": False,
-        "status": "sent",
-        "recipient": request.fallback_email
-    }
+    try:
+        result = run_outreach_for_prospect(
+            request.prospect_id, 
+            request.icp, 
+            request.fallback_email
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/campaign/{campaign_id}")
 def get_campaign_endpoint(campaign_id: int):
-    return {
-        "campaign": {
-            "id": campaign_id,
-            "icp": "Test ICP",
-            "plan_tier": "free",
-            "status": "completed"
-        },
-        "prospects": []
-    }
+    try:
+        campaign = get_campaign(campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+        
+        prospects = get_campaign_prospects(campaign_id)
+        
+        return {
+            "campaign": campaign,
+            "prospects": prospects
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/history")
 def get_history():
-    return {"campaigns": [], "total": 0}
+    try:
+        campaigns = get_recent_campaigns(limit=20)
+        return {"campaigns": campaigns, "total": len(campaigns)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/sent-emails")
+def get_sent_emails():
+    """Get all sent emails across all campaigns"""
+    try:
+        from database import get_connection
+        conn = get_connection()
+        
+        rows = conn.execute("""
+            SELECT p.*, c.icp, c.created_at as campaign_date
+            FROM company_prospects p
+            JOIN icp_campaigns c ON p.campaign_id = c.id
+            WHERE p.send_status = 'sent' AND p.contact_email IS NOT NULL
+            ORDER BY p.created_at DESC
+        """).fetchall()
+        
+        conn.close()
+        
+        sent_emails = []
+        for row in rows:
+            sent_emails.append({
+                "id": row["id"],
+                "campaign_id": row["campaign_id"],
+                "company_name": row["company_name"],
+                "contact_name": row["contact_name"],
+                "contact_email": row["contact_email"],
+                "contact_title": row["contact_title"],
+                "email_subject": row["email_subject"],
+                "generated_email": row["generated_email"],
+                "pdf_path": row["pdf_path"],
+                "sent_at": row["created_at"],
+                "campaign_icp": row["icp"],
+                "campaign_date": row["campaign_date"]
+            })
+        
+        return {
+            "sent_emails": sent_emails,
+            "total_sent": len(sent_emails)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.delete("/prospect/{prospect_id}")
 def delete_prospect(prospect_id: int):
