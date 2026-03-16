@@ -1,11 +1,11 @@
 import os
-import resend
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
-
-resend.api_key = os.getenv("RESEND_API_KEY")
 
 def tool_outreach_automated_sender(account_brief: str,
                                    signals: list,
@@ -60,22 +60,29 @@ Subject: [subject line here]
         subject = parts[0].replace("Subject:", "").strip()
         body = parts[1].strip() if len(parts) > 1 else content
         
-        # Send via Resend if email exists
+        # Send via SMTP if email exists
         if recipient_email:
             try:
-                html_body = (
-                    "<div style='font-family:sans-serif;"
-                    "max-width:600px;line-height:1.6;color:#333'>"
-                    + body.replace("\n", "<br>")
-                    + "</div>"
+                # Create message
+                msg = MIMEMultipart()
+                msg['From'] = os.getenv("FROM_EMAIL", "aaaditya169@gmail.com")
+                msg['To'] = recipient_email
+                msg['Subject'] = subject
+                
+                # Add body
+                msg.attach(MIMEText(body, 'plain'))
+                
+                # SMTP setup
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(
+                    os.getenv("SMTP_USER", "aaaditya169@gmail.com"),
+                    os.getenv("SMTP_PASSWORD", "lqgq owim svsx slrs")
                 )
                 
-                result = resend.Emails.send({
-                    "from": os.getenv("FROM_EMAIL", "onboarding@resend.dev"),
-                    "to": [recipient_email],
-                    "subject": subject,
-                    "html": html_body
-                })
+                # Send email
+                server.send_message(msg)
+                server.quit()
                 
                 return {
                     "status": "sent",
@@ -83,7 +90,7 @@ Subject: [subject line here]
                     "recipient_name": recipient_name,
                     "subject": subject,
                     "generated_email": body,
-                    "email_id": result.get("id", "")
+                    "email_id": "smtp_sent"
                 }
             except Exception as e:
                 return {
