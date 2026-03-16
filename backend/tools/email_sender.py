@@ -1,25 +1,25 @@
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import resend
 from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
 
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 def tool_outreach_automated_sender(account_brief: str,
                                    signals: list,
                                    contact: dict,
-                                   company: str) -> dict:
+                                   company: str,
+                                   pdf_path: str = "") -> dict:
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
-    recipient_name = contact.get("name", "") or "there"
-    first_name = recipient_name.split()[0] if recipient_name != "there" else "there"
+    first_name = (contact.get("name") or "there").split()[0]
     recipient_email = contact.get("email", "")
     recipient_title = contact.get("title", "")
     
-    # Only HIGH + MEDIUM verified signals in email
-    verified_signals = [s["signal"] for s in signals if s["confidence"] in ["HIGH", "MEDIUM"]]
+    verified_signals = [s["signal"] for s in signals
+                       if s["confidence"] in ["HIGH", "MEDIUM"]]
     signals_text = "\n".join([f"- {s}" for s in verified_signals[:3]])
     
     prompt = f"""Write a personalized B2B outreach email.
@@ -29,23 +29,22 @@ Recipient: {first_name}, {recipient_title} at {company}
 Account Brief:
 {account_brief}
 
-Verified Signals (reference AT LEAST 2 specifically):
+Verified Signals (reference AT LEAST 2):
 {signals_text}
 
 Rules:
-- Address recipient by first name only
-- Reference minimum 2 specific verified signals by name in the body
-- Connect those signals to a specific operational pain point
-- One clear CTA: 15-minute call
-- Max 150 words total in the body
-- No generic phrases like "I wanted to reach out" or "Hope this finds you well"
-- Professional but conversational tone
-- Zero-template policy: every sentence must reference this specific company
+- Address by first name
+- Reference minimum 2 specific verified signals
+- Connect signals to a specific pain point
+- One CTA: 15-minute call
+- Max 150 words in body
+- No generic openers
+- Zero-template: every sentence is specific to this company
 
 Format EXACTLY as:
-Subject: [subject line here]
+Subject: [subject line]
 ---
-[email body here]"""
+[email body]"""
     
     try:
         response = client.chat.completions.create(
@@ -60,44 +59,46 @@ Subject: [subject line here]
         subject = parts[0].replace("Subject:", "").strip()
         body = parts[1].strip() if len(parts) > 1 else content
         
-        # Send via SMTP if email exists
         if recipient_email:
             try:
-                # Create message
-                msg = MIMEMultipart()
-                msg['From'] = os.getenv("FROM_EMAIL")
-                msg['To'] = recipient_email
-                msg['Subject'] = subject
+                html_body = ("<div style='font-family:sans-serif;max-width:600px;"
+                           "line-height:1.6;color:#333'>"
+                           + body.replace("\n", "<br>")
+                           + "</div>")
                 
-                # Add body
-                msg.attach(MIMEText(body, 'plain'))
+                email_params = {
+                    "from": os.getenv("FROM_EMAIL", "onboarding@resend.dev"),
+                    "to": [recipient_email],
+                    "subject": subject,
+                    "html": html_body
+                }
                 
-                # SMTP setup
-                server = smtplib.SMTP('smtp.gmail.com', 587)
-                server.starttls()
-                server.login(
-                    os.getenv("SMTP_USER"),
-                    os.getenv("SMTP_PASSWORD")
-                )
+                # Attach PDF if exists
+                if pdf_path and os.path.exists(pdf_path):
+                    import base64
+                    with open(pdf_path, "rb") as f:
+                        pdf_data = base64.b64encode(f.read()).decode()
+                    email_params["attachments"] = [{
+                        "filename": f"FireReach_{company.replace(' ','_')}.pdf",
+                        "content": pdf_data
+                    }]
                 
-                # Send email
-                server.send_message(msg)
-                server.quit()
+                result = resend.Emails.send(email_params)
                 
                 return {
                     "status": "sent",
                     "recipient": recipient_email,
-                    "recipient_name": recipient_name,
+                    "recipient_name": contact.get("name", ""),
                     "subject": subject,
                     "generated_email": body,
-                    "email_id": "smtp_sent"
+                    "email_id": result.get("id", "")
                 }
             except Exception as e:
                 return {
                     "status": "failed",
                     "error": str(e),
                     "recipient": recipient_email,
-                    "recipient_name": recipient_name,
+                    "recipient_name": contact.get("name", ""),
                     "subject": subject,
                     "generated_email": body
                 }
@@ -105,7 +106,7 @@ Subject: [subject line here]
             return {
                 "status": "no_email_found",
                 "recipient": "",
-                "recipient_name": recipient_name,
+                "recipient_name": contact.get("name", ""),
                 "subject": subject,
                 "generated_email": body
             }

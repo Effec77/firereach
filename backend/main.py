@@ -1,10 +1,16 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional
 from dotenv import load_dotenv
-from agent import run_agent
+from agent import run_discovery, run_outreach_for_prospect
+from database import (
+    init_db, get_campaign, get_campaign_prospects,
+    get_recent_campaigns, update_prospect, get_connection
+)
 
 load_dotenv()
+init_db()
 
 app = FastAPI(title="FireReach API")
 
@@ -16,32 +22,64 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class AgentRequest(BaseModel):
+class DiscoverRequest(BaseModel):
     icp: str
-    company: str
-    recipient_email: str
+    plan_tier: str = "free"
+
+class OutreachRequest(BaseModel):
+    prospect_id: int
+    icp: str
+    fallback_email: Optional[str] = ""
+
+class ApprovalRequest(BaseModel):
+    prospect_id: int
+    action: str  # "approve" or "skip"
 
 @app.get("/")
 def health_check():
     return {"status": "FireReach API running"}
 
-@app.get("/test-env")
-def test_environment():
-    import os
-    return {
-        "groq_key_exists": bool(os.getenv("GROQ_API_KEY")),
-        "smtp_user_exists": bool(os.getenv("SMTP_USER")),
-        "smtp_password_exists": bool(os.getenv("SMTP_PASSWORD")),
-        "from_email_exists": bool(os.getenv("FROM_EMAIL")),
-        "apollo_key_exists": bool(os.getenv("APOLLO_API_KEY")),
-        "hunter_key_exists": bool(os.getenv("HUNTER_API_KEY"))
-    }
-
-@app.post("/run-agent")
-def run_agent_endpoint(request: AgentRequest):
-    result = run_agent(
+@app.post("/discover")
+def discover_endpoint(request: DiscoverRequest):
+    result = run_discovery(
         icp=request.icp,
-        company=request.company,
-        recipient_email=request.recipient_email
+        plan_tier=request.plan_tier
     )
     return result
+
+@app.post("/approve")
+def approve_endpoint(request: ApprovalRequest):
+    status = "approved" if request.action == "approve" else "skipped"
+    update_prospect(request.prospect_id, {"approval_status": status})
+    return {"prospect_id": request.prospect_id, "status": status}
+
+@app.post("/outreach")
+def outreach_endpoint(request: OutreachRequest):
+    result = run_outreach_for_prospect(
+        prospect_id=request.prospect_id,
+        icp=request.icp,
+        fallback_email=request.fallback_email or ""
+    )
+    return result
+
+@app.get("/campaign/{campaign_id}")
+def get_campaign_endpoint(campaign_id: int):
+    campaign = get_campaign(campaign_id)
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    prospects = get_campaign_prospects(campaign_id)
+    return {"campaign": campaign, "prospects": prospects}
+
+@app.get("/history")
+def get_history():
+    campaigns = get_recent_campaigns(limit=10)
+    return {"campaigns": campaigns, "total": len(campaigns)}
+
+@app.delete("/prospect/{prospect_id}")
+def delete_prospect(prospect_id: int):
+    conn = get_connection()
+    conn.execute("DELETE FROM company_prospects WHERE id = ?", (prospect_id,))
+    conn.commit()
+    conn.close()
+    return {"deleted": prospect_id}
