@@ -16,55 +16,95 @@ def run_discovery(icp: str, plan_tier: str) -> dict:
     Returns campaign_id + list of prospects for user approval."""
     from database import get_plan_limit
     
+    print(f"🚀 Starting discovery for ICP: {icp}")
+    print(f"📊 Plan tier: {plan_tier}")
+    
     max_companies = get_plan_limit(plan_tier)
+    print(f"🎯 Max companies: {max_companies}")
     
     # Create campaign
     campaign_id = create_campaign(icp, plan_tier)
+    print(f"📝 Created campaign ID: {campaign_id}")
     
-    # Stage 1: Find companies matching ICP
-    companies = discover_companies(icp, max_companies=max_companies)
-    
-    if not companies:
+    try:
+        # Stage 1: Find companies matching ICP
+        print("🔍 Stage 1: Discovering companies...")
+        companies = discover_companies(icp, max_companies=max_companies)
+        print(f"✅ Found {len(companies)} companies")
+        
+        if not companies:
+            print("❌ No companies found")
+            update_campaign_status(campaign_id, "failed")
+            return {
+                "campaign_id": campaign_id,
+                "status": "failed",
+                "error": "No companies found for this ICP",
+                "prospects": []
+            }
+        
+        # Stage 2+3: Signals + scoring per company
+        print("📡 Stage 2+3: Harvesting signals and scoring...")
+        prospect_ids = []
+        for i, company_data in enumerate(companies):
+            company_name = company_data["company_name"]
+            print(f"🏢 Processing company {i+1}/{len(companies)}: {company_name}")
+            
+            try:
+                harvested = tool_signal_harvester(company_name)
+                print(f"📊 Harvested {len(harvested.get('signals', []))} signals")
+                
+                prospect_data = {
+                    "company_name": company_name,
+                    "business_summary": company_data.get("business_summary", ""),
+                    "website": company_data.get("website", ""),
+                    "signals": harvested["signals"],
+                    "high_confidence_count": harvested["high_confidence_count"],
+                    "target_designation": harvested["target_designation"],
+                    "signal_score": harvested["signal_score"]
+                }
+                
+                prospect_id = save_prospect(campaign_id, prospect_data)
+                prospect_ids.append(prospect_id)
+                print(f"✅ Saved prospect ID: {prospect_id}")
+                
+            except Exception as e:
+                print(f"❌ Error processing {company_name}: {e}")
+                continue
+        
+        if not prospect_ids:
+            print("❌ No prospects created")
+            update_campaign_status(campaign_id, "failed")
+            return {
+                "campaign_id": campaign_id,
+                "status": "failed",
+                "error": "Failed to process any companies",
+                "prospects": []
+            }
+        
+        update_campaign_status(campaign_id,
+                              "awaiting_approval",
+                              companies_found=len(companies))
+        
+        prospects = get_campaign_prospects(campaign_id)
+        print(f"🎯 Discovery complete: {len(prospects)} prospects ready for approval")
+        
+        return {
+            "campaign_id": campaign_id,
+            "status": "awaiting_approval",
+            "plan_tier": plan_tier,
+            "max_companies": max_companies,
+            "prospects": prospects
+        }
+        
+    except Exception as e:
+        print(f"❌ Discovery failed with error: {e}")
         update_campaign_status(campaign_id, "failed")
         return {
             "campaign_id": campaign_id,
             "status": "failed",
-            "error": "No companies found for this ICP",
+            "error": f"Discovery failed: {str(e)}",
             "prospects": []
         }
-    
-    # Stage 2+3: Signals + scoring per company
-    prospect_ids = []
-    for company_data in companies:
-        company_name = company_data["company_name"]
-        harvested = tool_signal_harvester(company_name)
-        
-        prospect_data = {
-            "company_name": company_name,
-            "business_summary": company_data.get("business_summary", ""),
-            "website": company_data.get("website", ""),
-            "signals": harvested["signals"],
-            "high_confidence_count": harvested["high_confidence_count"],
-            "target_designation": harvested["target_designation"],
-            "signal_score": harvested["signal_score"]
-        }
-        
-        prospect_id = save_prospect(campaign_id, prospect_data)
-        prospect_ids.append(prospect_id)
-    
-    update_campaign_status(campaign_id,
-                          "awaiting_approval",
-                          companies_found=len(companies))
-    
-    prospects = get_campaign_prospects(campaign_id)
-    
-    return {
-        "campaign_id": campaign_id,
-        "status": "awaiting_approval",
-        "plan_tier": plan_tier,
-        "max_companies": max_companies,
-        "prospects": prospects
-    }
 
 def run_outreach_for_prospect(prospect_id: int,
                              icp: str,

@@ -1315,34 +1315,62 @@
                 });
             });
             
-            // Form submission - REAL API CALL
+            // Form submission - REAL API CALL with debugging
             document.getElementById('campaign-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
+                console.log('Form submitted!');
+                
                 state.currentIcp = document.getElementById('icp-input').value;
                 state.fallbackEmail = document.getElementById('fallback-email').value;
+                
+                console.log('ICP:', state.currentIcp);
+                console.log('Plan:', state.currentPlan);
+                console.log('Fallback Email:', state.fallbackEmail);
+                
+                if (!state.currentIcp.trim()) {
+                    alert('Please enter your Ideal Customer Profile');
+                    return;
+                }
+                
+                if (!state.fallbackEmail.trim()) {
+                    alert('Please enter a fallback email');
+                    return;
+                }
                 
                 showPage('loading');
                 animatePipeline();
                 
                 try {
+                    console.log('Making API call to:', `${API_URL}/discover`);
+                    
+                    const requestBody = {
+                        icp: state.currentIcp,
+                        plan_tier: state.currentPlan
+                    };
+                    
+                    console.log('Request body:', requestBody);
+                    
                     // REAL API CALL to discover companies
                     const response = await fetch(`${API_URL}/discover`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            icp: state.currentIcp,
-                            plan_tier: state.currentPlan
-                        })
+                        body: JSON.stringify(requestBody)
                     });
                     
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                     }
                     
                     const data = await response.json();
+                    console.log('Response data:', data);
                     
                     if (data.status === 'failed') {
                         alert(`Discovery failed: ${data.error}`);
@@ -1351,15 +1379,17 @@
                     }
                     
                     // Store real data from API
-                    state.prospects = data.prospects;
+                    state.prospects = data.prospects || [];
                     state.currentCampaignId = data.campaign_id;
+                    
+                    console.log('Prospects found:', state.prospects.length);
                     
                     // Show prospects for approval
                     showPage('prospects');
                     
                 } catch (error) {
                     console.error('Discovery failed:', error);
-                    alert(`Discovery failed: ${error.message}`);
+                    alert(`Discovery failed: ${error.message}\n\nPlease check the console for more details.`);
                     showPage('new-campaign');
                 }
             });
