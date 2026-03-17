@@ -1271,15 +1271,25 @@
         
         // Page navigation
         function showPage(pageName) {
+            console.log('Showing page:', pageName);
+            
             // Update nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`[onclick="showPage('${pageName}')"]`).classList.add('active');
+            
+            // Find and activate the correct nav item
+            const targetNavItem = document.querySelector(`[onclick*="showPage('${pageName}')"]`);
+            if (targetNavItem) {
+                targetNavItem.classList.add('active');
+            }
             
             // Update breadcrumb
-            document.getElementById('current-page').textContent = 
-                pageName.charAt(0).toUpperCase() + pageName.slice(1).replace('-', ' ');
+            const breadcrumbElement = document.getElementById('current-page');
+            if (breadcrumbElement) {
+                breadcrumbElement.textContent = 
+                    pageName.charAt(0).toUpperCase() + pageName.slice(1).replace('-', ' ');
+            }
             
             // Hide all pages
             document.querySelectorAll('[id$="-page"]').forEach(page => {
@@ -1287,7 +1297,12 @@
             });
             
             // Show target page
-            document.getElementById(pageName + '-page').classList.remove('hidden');
+            const targetPage = document.getElementById(pageName + '-page');
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            } else {
+                console.error('Page not found:', pageName + '-page');
+            }
             
             state.currentPage = pageName;
             
@@ -1298,102 +1313,6 @@
                 loadHistory();
             }
         }
-        
-        // Plan selector
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.plan-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('.plan-card').forEach(c => {
-                        c.classList.remove('selected');
-                        c.style.border = '2px solid var(--border)';
-                        c.style.background = 'var(--bg-tertiary)';
-                    });
-                    card.classList.add('selected');
-                    card.style.border = '2px solid var(--primary)';
-                    card.style.background = 'rgba(255, 107, 53, 0.1)';
-                    state.currentPlan = card.dataset.plan;
-                });
-            });
-            
-            // Form submission - REAL API CALL with debugging
-            document.getElementById('campaign-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                console.log('Form submitted!');
-                
-                state.currentIcp = document.getElementById('icp-input').value;
-                state.fallbackEmail = document.getElementById('fallback-email').value;
-                
-                console.log('ICP:', state.currentIcp);
-                console.log('Plan:', state.currentPlan);
-                console.log('Fallback Email:', state.fallbackEmail);
-                
-                if (!state.currentIcp.trim()) {
-                    alert('Please enter your Ideal Customer Profile');
-                    return;
-                }
-                
-                if (!state.fallbackEmail.trim()) {
-                    alert('Please enter a fallback email');
-                    return;
-                }
-                
-                showPage('loading');
-                animatePipeline();
-                
-                try {
-                    console.log('Making API call to:', `${API_URL}/discover`);
-                    
-                    const requestBody = {
-                        icp: state.currentIcp,
-                        plan_tier: state.currentPlan
-                    };
-                    
-                    console.log('Request body:', requestBody);
-                    
-                    // REAL API CALL to discover companies
-                    const response = await fetch(`${API_URL}/discover`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
-                    
-                    console.log('Response status:', response.status);
-                    console.log('Response ok:', response.ok);
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Response data:', data);
-                    
-                    if (data.status === 'failed') {
-                        alert(`Discovery failed: ${data.error}`);
-                        showPage('new-campaign');
-                        return;
-                    }
-                    
-                    // Store real data from API
-                    state.prospects = data.prospects || [];
-                    state.currentCampaignId = data.campaign_id;
-                    
-                    console.log('Prospects found:', state.prospects.length);
-                    
-                    // Show prospects for approval
-                    showPage('prospects');
-                    
-                } catch (error) {
-                    console.error('Discovery failed:', error);
-                    alert(`Discovery failed: ${error.message}\n\nPlease check the console for more details.`);
-                    showPage('new-campaign');
-                }
-            });
-        });
         
         // Pipeline animation
         function animatePipeline() {
@@ -1699,8 +1618,129 @@
             }
         }
         
-        // Initialize app
+        // Initialize app - consolidated DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing FireReach...');
+            
+            // Plan selector
+            const planCards = document.querySelectorAll('.plan-card');
+            console.log('Found plan cards:', planCards.length);
+            
+            planCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    console.log('Plan selected:', card.dataset.plan);
+                    
+                    // Remove selected class from all cards
+                    planCards.forEach(c => {
+                        c.classList.remove('selected');
+                        c.style.border = '2px solid var(--border)';
+                        c.style.background = 'var(--bg-tertiary)';
+                    });
+                    
+                    // Add selected class to clicked card
+                    card.classList.add('selected');
+                    card.style.border = '2px solid var(--primary)';
+                    card.style.background = 'rgba(255, 107, 53, 0.1)';
+                    state.currentPlan = card.dataset.plan;
+                });
+            });
+            
+            // Form submission
+            const campaignForm = document.getElementById('campaign-form');
+            if (campaignForm) {
+                console.log('Campaign form found, adding event listener');
+                
+                campaignForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    console.log('Form submitted!');
+                    
+                    const icpInput = document.getElementById('icp-input');
+                    const fallbackEmailInput = document.getElementById('fallback-email');
+                    
+                    if (!icpInput || !fallbackEmailInput) {
+                        console.error('Form inputs not found');
+                        alert('Form inputs not found. Please refresh the page.');
+                        return;
+                    }
+                    
+                    state.currentIcp = icpInput.value;
+                    state.fallbackEmail = fallbackEmailInput.value;
+                    
+                    console.log('ICP:', state.currentIcp);
+                    console.log('Plan:', state.currentPlan);
+                    console.log('Fallback Email:', state.fallbackEmail);
+                    
+                    if (!state.currentIcp.trim()) {
+                        alert('Please enter your Ideal Customer Profile');
+                        return;
+                    }
+                    
+                    if (!state.fallbackEmail.trim()) {
+                        alert('Please enter a fallback email');
+                        return;
+                    }
+                    
+                    showPage('loading');
+                    animatePipeline();
+                    
+                    try {
+                        console.log('Making API call to:', `${API_URL}/discover`);
+                        
+                        const requestBody = {
+                            icp: state.currentIcp,
+                            plan_tier: state.currentPlan
+                        };
+                        
+                        console.log('Request body:', requestBody);
+                        
+                        // REAL API CALL to discover companies
+                        const response = await fetch(`${API_URL}/discover`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(requestBody)
+                        });
+                        
+                        console.log('Response status:', response.status);
+                        console.log('Response ok:', response.ok);
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.error('Error response:', errorText);
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                        }
+                        
+                        const data = await response.json();
+                        console.log('Response data:', data);
+                        
+                        if (data.status === 'failed') {
+                            alert(`Discovery failed: ${data.error}`);
+                            showPage('new-campaign');
+                            return;
+                        }
+                        
+                        // Store real data from API
+                        state.prospects = data.prospects || [];
+                        state.currentCampaignId = data.campaign_id;
+                        
+                        console.log('Prospects found:', state.prospects.length);
+                        
+                        // Show prospects for approval
+                        showPage('prospects');
+                        
+                    } catch (error) {
+                        console.error('Discovery failed:', error);
+                        alert(`Discovery failed: ${error.message}\n\nPlease check the console for more details.`);
+                        showPage('new-campaign');
+                    }
+                });
+            } else {
+                console.error('Campaign form not found!');
+            }
+            
+            // Initialize with dashboard page
             showPage('dashboard');
         });
     </script>
