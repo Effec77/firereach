@@ -38,12 +38,34 @@ class ApprovalRequest(BaseModel):
 def health_check():
     return {"status": "FireReach API running", "version": "v2.0-rebuild"}
 
+@app.post("/test")
+def test_endpoint():
+    return {"message": "Test endpoint working", "timestamp": "2025-01-15"}
+
 @app.post("/discover")
 def discover_endpoint(request: DiscoverRequest):
     try:
+        print(f"🚀 Discover endpoint called with ICP: {request.icp}")
+        print(f"📊 Plan tier: {request.plan_tier}")
+        
+        # Test if imports work
+        try:
+            from agent import run_discovery
+            print("✅ Agent import successful")
+        except Exception as e:
+            print(f"❌ Agent import failed: {e}")
+            return {
+                "campaign_id": 0,
+                "status": "failed", 
+                "error": f"Import error: {str(e)}",
+                "prospects": []
+            }
+        
         result = run_discovery(request.icp, request.plan_tier)
+        print(f"✅ Discovery completed: {result.get('status')}")
         return result
     except Exception as e:
+        print(f"❌ Discovery endpoint error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/approve")
